@@ -1,0 +1,16 @@
+dataset: KbsdJames/Omni-MATH # cais/hle
+
+provider: vllm # [vllm]
+
+base_url: http://localhost:8000/v1
+
+model: Qwen/Qwen3-32B
+max_completion_tokens: 32768
+reasoning: true
+
+# sample with multimodal is 2500, so text-only sample is about 2400
+num_workers: 2400
+
+max_samples: 30
+
+judge: Qwen/Qwen3-235B-A22B # o3-mini-2025-01-31
