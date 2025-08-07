@@ -1,9 +1,0 @@
-dataset: KbsdJames/Omni-MATH
-provider: vllm
-base_url: http://localhost:8000/v1
-model: Qwen/Qwen3-32B
-max_completion_tokens: 32768
-reasoning: true
-num_workers: 2400
-max_samples: 30
-judge: Qwen/Qwen3-235B-A22B
