@@ -78,7 +78,7 @@ export PYTHONPATH=$HOME/.conda/envs/llmbench/lib/python3.12/site-packages:$PYTHO
 # python predict.py #> predict.log 2>&1
 
 #--- 評価 -----------------------------------------------------------
-export OPENAI_API_KEY=""
+export OPENAI_API_KEY="fakeapikey"
 python judge_local.py #> judge.log 2>&1
 log INFO "JOB正常終了"
 

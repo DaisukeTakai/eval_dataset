@@ -31,7 +31,7 @@ from typing import Literal
 from pydantic import BaseModel
 from openai import AsyncOpenAI
 from tqdm.asyncio import tqdm_asyncio
-from datasets import load_dataset
+from datasets import load_dataset, Value
 from datetime import datetime
 import re
 
@@ -93,7 +93,7 @@ async def extract_answer(args, question, correct_answer, response):
         return None
 
 async def add_judge_response(args, question, predictions):
-    unique_id = question.get("id") # or f"q{next(_id_counter)}"
+    unique_id = question.get("id")
     prediction = copy.deepcopy(predictions[unique_id]) # not in-place
     question_text = question.get("question")
     correct_answer = question.get("answer")
@@ -242,7 +242,17 @@ def main(args):
     assert args.num_workers > 1, "num_workers must be 2 or greater"
 
     output_filepath = f"judged/judged_hle_{os.path.basename(args.model)}.json"
-    dataset = load_dataset(args.dataset, split="test").to_dict()
+    dataset = load_dataset(args.dataset, split="test")
+
+    print(f"元データセット列名: {dataset.column_names}")
+
+    if "id" not in dataset.column_names:
+        dataset_length = len(dataset)
+        dataset = dataset.add_column("id", [i + 1 for i in range(dataset_length)])
+        dataset = dataset.cast_column("id", Value("string"))
+
+    dataset = dataset.to_dict()
+
     # convert to list of json for async parallelism
     all_questions = [dict(zip(dataset.keys(), values)) for values in zip(*dataset.values())]
 
@@ -261,6 +271,12 @@ def main(args):
         judged_predictions = {}
 
     questions = [q for q in all_questions if q.get("id") in predictions and q.get("id") not in judged_predictions]
+
+    # all_questions の最初の 5 件の id と型を出力
+    print("all_questions sample IDs:", [(q.get("id"), type(q.get("id"))) for q in all_questions[:5]])
+    # predictions のキーのサンプルと型
+    print("predictions sample keys:", [(k, type(k)) for k in list(predictions.keys())[:5]])
+    print(f"[DEBUG] 判定対象 questions: {len(questions)} 件 / 全 questions: {total_questions} 件")
 
      # API will only be called for unjudged responses
     results = asyncio.run(judge_all_responses(args, questions, predictions))

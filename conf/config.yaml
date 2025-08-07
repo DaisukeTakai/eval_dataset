@@ -14,4 +14,4 @@ num_workers: 2400
 # 全件やりたいときはコメントアウト
 max_samples: null
 
-judge: Qwen/Qwen3-235B-A22B # o3-mini-2025-01-31
+judge: /home/Competition2025/P12/shareP12/models/Qwen3-235B-A22B-FP8/
