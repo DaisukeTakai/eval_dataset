@@ -30,8 +30,10 @@ pip install \
   --extra-index-url https://pypi.org/simple\
 ```
 ## 各人の$HOMEに合わせて下記点をご修正ください
-run_predict.sh/run_judge.shの冒頭に
-slurmのlogs出力先を指定している行があります。
+run_predict.sh/run_judge.shの冒頭に  
+#SBATCH --output=/home/Competition2025/P12/P12U017/slurm_logs/%x-%j.out  
+#SBATCH --error=/home/Competition2025/P12/P12U017/slurm_logs/%x-%j.err  
+slurmのlogs出力先を指定している行があります。  
 各自の環境に合わせて修正してからお使いください。
 
 ## 問題回答用のslurmファイル
