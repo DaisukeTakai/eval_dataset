@@ -29,12 +29,20 @@ pip install \
   vllm>=0.4.2 \
   --extra-index-url https://pypi.org/simple\
 ```
+## 各人の$HOMEに合わせて下記点をご修正ください
+run_predict.sh/run_judge.shの冒頭に
+slurmのlogs出力先を指定している行があります。
+各自の環境に合わせて修正してからお使いください。
 
 ## 問題回答用のslurmファイル
-run_predict.shを実行してください。  
+'''
+sbatch run_predict.sh
+'''
+を実行してください。  
 モデル名・データセット名の指定は、conf/config.yaml
 
 ## 正解判定用のslurmファイル
+
 run_judge.sh  
 モデル名の指摘は、conf/config.yaml
 ```
