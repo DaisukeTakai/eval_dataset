@@ -1,4 +1,4 @@
-# Humanity's Last Exam 評価コード
+# データセットの評価コード
 
 ## 環境構築
 ```
@@ -30,74 +30,17 @@ pip install \
   --extra-index-url https://pypi.org/simple\
 ```
 
-## hle 推論用のslurmファイル
-以下を適宜、変更して実行して下さい。
+## 問題回答用のslurmファイル
+run_predict.pyを実行してください。
+モデル名・データセット名の指定は、conf/config.yaml
+
+## 正解判定用のslurmファイル
+run_judge.py
+モデル名の指摘は、conf/config.yaml
 ```
-#!/bin/bash
-#SBATCH --job-name=qwen3_8gpu
-#SBATCH --partition=P01
-#SBATCH --nodelist=osk-gpu51
-#SBATCH --nodes=1
-#SBATCH --gpus-per-node=8
-#SBATCH --cpus-per-task=64
-#SBATCH --time=04:00:00
-#SBATCH --output=/home/Competition2025/adm/X006/logs/%x-%j.out
-#SBATCH --error=/home/Competition2025/adm/X006/logs/%x-%j.err
-#SBATCH --export=OPENAI_API_KEY="openai_api_keyをここに"
-#--- モジュール & Conda --------------------------------------------
-module purge
-module load cuda/12.6 miniconda/24.7.1-py312
-module load cudnn/9.6.0  
-module load nccl/2.24.3 
-source "$(conda info --base)/etc/profile.d/conda.sh"
-conda activate llmbench
-
-# Hugging Face 認証
-export HF_TOKEN= "<huggingface_tokenをここに>"
-export HF_HOME=${SLURM_TMPDIR:-$HOME}/.hf_cache
-export TRANSFORMERS_CACHE=$HF_HOME
-export HUGGINGFACE_HUB_TOKEN=$HF_TOKEN
-mkdir -p "$HF_HOME"
-echo "HF cache dir : $HF_HOME"                   # デバッグ用
-
-#--- GPU 監視 -------------------------------------------------------
-nvidia-smi -i 0,1,2,3,4,5,6,7 -l 3 > nvidia-smi.log &
-pid_nvsmi=$!
-
-#--- vLLM 起動（8GPU）----------------------------------------------
-vllm serve Qwen/Qwen3-32B \
-  --tensor-parallel-size 8 \
-  --enable-reasoning \
-  --reasoning-parser qwen3 \
-  --rope-scaling '{"rope_type":"yarn","factor":4.0,"original_max_position_embeddings":32768}' \
-  --max-model-len 131072 \
-  --gpu-memory-utilization 0.95 \
-  > vllm.log 2>&1 &
-pid_vllm=$!
-
-#--- ヘルスチェック -------------------------------------------------
-until curl -s http://127.0.0.1:8000/health >/dev/null; do
-  echo "$(date +%T) vLLM starting …"
-  sleep 10
-done
-echo "vLLM READY"
-
-#--- 推論 -----------------------------------------------------------
-python predict.py > predict.log 2>&1
-
-#--- 評価 -----------------------------------------------------------
-OPENAI_API_KEY=xxx python judge.py
-
-#--- 後片付け -------------------------------------------------------
-kill $pid_vllm
-kill $pid_nvsmi
-wait
-```
-評価結果が`leaderboard`フォルダに書き込まれています。`results.jsonl`と`summary.json`が出力されているかご確認ください。
-
 ## 動作確認済みモデル （vLLM対応モデルのみ動作可能です）
-- Qwen3 8B
-- o4-mini
+- 問題回答: Qwen3 8B
+- 正解判定: Qwen3 235B FP8
 
 ## configの仕様
 `conf/config.yaml`の設定できるパラメーターの説明です。
@@ -115,6 +58,4 @@ wait
 |`judge`                  |string    |LLM評価に使用するOpenAIモデルです。通常はo3-miniを使用ください。|
 
 ## Memo
-1採点（2500件）に入力25万トークン、出力に2万トークン使う（GPT4.1-miniでの見積もりのためo3-miniだと異なる可能性あり）
-
-2500件(multimodal)または2401件(text-only)の全ての問題が正常に推論または評価されない場合は、複数回実行してください。ファイルに保存されている問題は再推論されません。
+評価結果が`leaderboard`フォルダに書き込まれています。`results.jsonl`と`summary.json`が出力されているかご確認ください。
