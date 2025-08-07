@@ -11,6 +11,7 @@ reasoning: true
 # sample with multimodal is 2500, so text-only sample is about 2400
 num_workers: 2400
 
-max_samples: 30
+# 全件やりたいときはコメントアウト
+max_samples: null
 
 judge: Qwen/Qwen3-235B-A22B # o3-mini-2025-01-31
