@@ -3,8 +3,8 @@
 #SBATCH --partition=P12
 #SBATCH --nodelist=osk-gpu86
 #SBATCH --nodes=1
-#SBATCH --gpus-per-node=8
-#SBATCH --cpus-per-task=240
+#SBATCH --gpus-per-node=4
+#SBATCH --cpus-per-task=40
 #SBATCH --time=12:00:00
 #SBATCH --output=/home/Competition2025/P12/P12U017/slurm_logs/%x-%j.out
 #SBATCH --error=/home/Competition2025/P12/P12U017/slurm_logs/%x-%j.err
@@ -37,7 +37,7 @@ mkdir -p "$HF_HOME"
 # echo "HF cache dir : $HF_HOME"		# デバッグ用
 
 #--- GPU 準備 監視 ----------------------------------------------------
-export CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7	# CUDAの数で要修正
+export CUDA_VISIBLE_DEVICES=0,1,2,3 #,4,5,6,7	# CUDAの数で要修正
 
 ulimit -v unlimited
 ulimit -m unlimited
@@ -71,6 +71,7 @@ echo "$(date +%T) vLLM READY"
 models=$(curl -s http://localhost:8000/v1/models)
 echo "$models"
 
+# hydra-core対策
 export PYTHONPATH=$HOME/.conda/envs/llmbench/lib/python3.12/site-packages:$PYTHONPATH
 
 #--- 推論 -----------------------------------------------------------
