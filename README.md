@@ -29,7 +29,11 @@ pip install \
   vllm>=0.4.2 \
   --extra-index-url https://pypi.org/simple\
 ```
-## 各人の$HOMEに合わせて下記点をご修正ください
+## 準備作業
+### ファイルの置き場
+$HOME/llm_bridge_prod/以下に置いてください。
+
+### 環境に合わせて下記点をご修正ください
 run_predict.sh/run_judge.shの冒頭に  
 #SBATCH --output=/home/Competition2025/P12/P12U017/slurm_logs/%x-%j.out  
 #SBATCH --error=/home/Competition2025/P12/P12U017/slurm_logs/%x-%j.err  
