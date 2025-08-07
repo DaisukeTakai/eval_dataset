@@ -247,7 +247,9 @@ def main(args):
 
     total_questions = len(all_questions)
 
-    with open(f"predictions/hle_{os.path.basename(args.model)}.json", "r") as f:
+    dataset_name = os.path.basename(args.dataset)
+    dataset_name = re.sub(r"[^\w\-]", "_", dataset_name)
+    with open(f"predictions/{dataset_name}_{os.path.basename(args.model)}.json", "r") as f:
         predictions = json.load(f)
 
     # load only unjudged responses
