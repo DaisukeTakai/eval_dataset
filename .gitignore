@@ -1,6 +1,4 @@
 judged/
-outputs/
-leaderboard/
 predictions/
 nvidia-smi.log
 vllm.log
