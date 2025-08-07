@@ -46,11 +46,11 @@ nvidia-smi -l 3 > nvidia-smi.log &
 pid_nvsmi=$!
 
 #--- 必要なディレクトリを作成 -----------------------------------------
-cd ${SLURM_TMPDIR:-$HOME}/llm_bridge_prod/eval_hle/
+cd ${SLURM_TMPDIR:-$HOME}/llm_bridge_prod/eval_dataset/
 # mkdir -p predictions
 mkdir -p judged
 
-#--- vLLM 起動（GPU数要修正）-------------------------------------------- model-00001-of-00048.safetensors 
+#--- vLLM 起動（GPU数要修正）--------------------------------------------
 vllm serve /home/Competition2025/P12/shareP12/models/Qwen3-235B-A22B-FP8/ \
   --tensor-parallel-size 4 \
   --reasoning-parser deepseek_r1 \
@@ -71,7 +71,7 @@ echo "$(date +%T) vLLM READY"
 models=$(curl -s http://localhost:8000/v1/models)
 echo "$models"
 
-export PYTHONPATH=/home/Competition2025/P12/P12U017/.conda/envs/llmbench/lib/python3.12/site-packages:$PYTHONPATH
+export PYTHONPATH=$HOME/.conda/envs/llmbench/lib/python3.12/site-packages:$PYTHONPATH
 
 #--- 推論 -----------------------------------------------------------
 # python predict.py #> predict.log 2>&1

@@ -45,7 +45,7 @@ nvidia-smi -l 3 > nvidia-smi.log &
 pid_nvsmi=$!
 
 #--- 必要なディレクトリを作成 -------------------------------------
-cd ${SLURM_TMPDIR:-$HOME}/llm_bridge_prod/eval_hle
+cd ${SLURM_TMPDIR:-$HOME}/llm_bridge_prod/eval_dataset
 mkdir -p predictions
 #mkdir -p judged
 
@@ -72,7 +72,7 @@ models=$(curl -s http://localhost:8000/v1/models)
 # 変数の中身を echo で出力
 echo "$models"
 
-export PYTHONPATH=/home/Competition2025/P12/P12U017/.conda/envs/llmbench/lib/python3.12/site-packages:$PYTHONPATH
+export PYTHONPATH=$HOME/.conda/envs/llmbench/lib/python3.12/site-packages:$PYTHONPATH
 
 python -c 'import sys;print("executable:", sys.executable);print("sys.path:", sys.path)'
 #--- 推論 ---------------------------------------------------------
