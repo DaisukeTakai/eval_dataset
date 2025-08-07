@@ -33,6 +33,7 @@ from openai import AsyncOpenAI
 from tqdm.asyncio import tqdm_asyncio
 from datasets import load_dataset
 from datetime import datetime
+import re
 
 client = AsyncOpenAI(
     base_url="http://localhost:8000/v1",

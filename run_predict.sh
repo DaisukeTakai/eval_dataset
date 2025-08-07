@@ -3,9 +3,9 @@
 #SBATCH --partition=P12
 #SBATCH --nodelist=osk-gpu86
 #SBATCH --nodes=1
-#SBATCH --gpus-per-node=4
-#SBATCH --cpus-per-task=120
-#SBATCH --time=04:00:00
+#SBATCH --gpus-per-node=8
+#SBATCH --cpus-per-task=240
+#SBATCH --time=24:00:00
 #SBATCH --output=/home/Competition2025/P12/P12U017/slurm_logs/%x-%j.out
 #SBATCH --error=/home/Competition2025/P12/P12U017/slurm_logs/%x-%j.err
 #--- log用 --------------------------------------------------------
@@ -36,7 +36,7 @@ mkdir -p "$HF_HOME"
 echo "HF cache dir : $HF_HOME"                   # デバッグ用
 
 #--- GPU 準備 監視 ------------------------------------------------
-export CUDA_VISIBLE_DEVICES=0,1,2,3 #,4,5,6,7
+export CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
 
 ulimit -v unlimited
 ulimit -m unlimited
@@ -51,7 +51,7 @@ mkdir -p predictions
 
 #--- vLLM 起動（8GPU）---------------------------------------------
 vllm serve /home/Competition2025/P12/shareP12/models/Qwen3-32B \
-  --tensor-parallel-size 4 \
+  --tensor-parallel-size 8 \
   --reasoning-parser deepseek_r1 \
   --rope-scaling '{"rope_type":"yarn","factor":4.0,"original_max_position_embeddings":32768}' \
   --max-model-len 131072 \
