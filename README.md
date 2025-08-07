@@ -31,11 +31,11 @@ pip install \
 ```
 
 ## 問題回答用のslurmファイル
-run_predict.pyを実行してください。
+run_predict.shを実行してください。  
 モデル名・データセット名の指定は、conf/config.yaml
 
 ## 正解判定用のslurmファイル
-run_judge.py
+run_judge.sh  
 モデル名の指摘は、conf/config.yaml
 ```
 ## 動作確認済みモデル （vLLM対応モデルのみ動作可能です）
