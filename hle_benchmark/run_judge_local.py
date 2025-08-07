@@ -241,7 +241,11 @@ def dump_metrics(args, predictions, total_questions, all_questions):
 def main(args):
     assert args.num_workers > 1, "num_workers must be 2 or greater"
 
-    output_filepath = f"judged/judged_hle_{os.path.basename(args.model)}.json"
+    dataset_name = os.path.basename(args.dataset)
+    dataset_name = re.sub(r"[^\w\-]", "_", dataset_name)
+
+    output_filepath = f"judged/judged_{dataset_name}_{os.path.basename(args.model)}.json"
+
     dataset = load_dataset(args.dataset, split="test")
 
     print(f"元データセット列名: {dataset.column_names}")
@@ -258,8 +262,6 @@ def main(args):
 
     total_questions = len(all_questions)
 
-    dataset_name = os.path.basename(args.dataset)
-    dataset_name = re.sub(r"[^\w\-]", "_", dataset_name)
     with open(f"predictions/{dataset_name}_{os.path.basename(args.model)}.json", "r") as f:
         predictions = json.load(f)
 
