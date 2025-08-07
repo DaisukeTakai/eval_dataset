@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=predict
 #SBATCH --partition=P12
-#SBATCH --nodelist=osk-gpu84
+#SBATCH --nodelist=osk-gpu86
 #SBATCH --nodes=1
 #SBATCH --gpus-per-node=4
 #SBATCH --cpus-per-task=120
