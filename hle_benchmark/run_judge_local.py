@@ -34,6 +34,7 @@ from tqdm.asyncio import tqdm_asyncio
 from datasets import load_dataset, Value
 from datetime import datetime
 import re
+from collections import defaultdict
 
 client = AsyncOpenAI(
     base_url="http://localhost:8000/v1",
@@ -78,10 +79,10 @@ async def extract_answer(args, question, correct_answer, response):
                 messages=[
                     {"role": "user", "content": prompt}
                 ],
-                response_format=ExtractedAnswer, 
-            ) 
+                response_format=ExtractedAnswer,
+            )
         content = response.choices[0].message.parsed
-        return { 
+        return {
             "correct_answer": correct_answer,
             "model_answer": content.extracted_final_answer,
             "reasoning": content.reasoning,
@@ -95,7 +96,8 @@ async def extract_answer(args, question, correct_answer, response):
 async def add_judge_response(args, question, predictions):
     unique_id = question.get("id")
     prediction = copy.deepcopy(predictions[unique_id]) # not in-place
-    question_text = question.get("question")
+    question_text = question.get("question") or question.get('solution')
+
     correct_answer = question.get("answer")
 
     if "judge_response" in prediction: # already judged
@@ -123,7 +125,7 @@ async def judge_all_responses(args, questions, predictions):
     return results
 
 # source: https://github.com/hendrycks/outlier-exposure/blob/master/utils/calibration_tools.py
-def calib_err(confidence, correct, p='2', beta=100): 
+def calib_err(confidence, correct, p='2', beta=100):
     if len(confidence) < beta:
         return 0.0
     # beta is target bin size
@@ -160,6 +162,9 @@ def calib_err(confidence, correct, p='2', beta=100):
 def dump_metrics(args, predictions, total_questions, all_questions):
     correct = []
     confidence = []
+
+    correct_by_category = defaultdict(list)
+    """
     correct_by_category = {
         "Math": [], # 41%
         "Physics": [], # 9%
@@ -170,13 +175,15 @@ def dump_metrics(args, predictions, total_questions, all_questions):
         "Chemistry": [], # 7%
         "Other": [], # 9%
     }
+    """
+
     for k, v in predictions.items():
         data = next(filter(lambda x: x.get("id") == k, all_questions))
         if "judge_response" in v:
             judge_response = v["judge_response"]
             correct.append("yes" in judge_response["correct"])
             confidence.append(judge_response["confidence"])
-            correct_by_category[data["category"]].append("yes" in judge_response["correct"])
+            correct_by_category[data.get("category")].append("yes" in judge_response["correct"])
         else:
             print(f"Missing judge response for {k}, you should rerun the judge")
 
@@ -203,10 +210,10 @@ def dump_metrics(args, predictions, total_questions, all_questions):
         data = next(filter(lambda x: x["id"] == k, all_questions))
         results.append({
             "id": k,
-            "category": data["category"],
-            "question": data["question"],
+            "category": data.get("category"),
+            "question": data.get("question") or data.get('solution'),
             "user_prompt": "", # TODO
-            "answer_type": data["answer_type"],
+            "answer_type": data.get("answer_type"),
             "prediction": v["judge_response"]["model_answer"],
             "gold": v["judge_response"]["correct_answer"],
             "correct": 1 if v["judge_response"]["correct"] == "yes" else 0,
@@ -217,14 +224,8 @@ def dump_metrics(args, predictions, total_questions, all_questions):
         "model_name": predictions[k]["model"],
         "overall_accuracy": accuracy,
         "accuracy_per_category": {
-            "Math": sum(correct_by_category["Math"]) / len(correct_by_category["Math"]) * 100 if len(correct_by_category["Math"]) else None,
-            "Physics": sum(correct_by_category["Physics"]) / len(correct_by_category["Physics"]) * 100 if len(correct_by_category["Physics"]) else None,
-            "Biology/Medicine": sum(correct_by_category["Biology/Medicine"]) / len(correct_by_category["Biology/Medicine"]) * 100 if len(correct_by_category["Biology/Medicine"]) else None,
-            "Humanities/Social Science": sum(correct_by_category["Humanities/Social Science"]) / len(correct_by_category["Humanities/Social Science"]) * 100 if len(correct_by_category["Humanities/Social Science"]) else None,
-            "Computer Science/AI": sum(correct_by_category["Computer Science/AI"]) / len(correct_by_category["Computer Science/AI"]) * 100 if len(correct_by_category["Computer Science/AI"]) else None,
-            "Engineering": sum(correct_by_category["Engineering"]) / len(correct_by_category["Engineering"]) * 100 if len(correct_by_category["Engineering"]) else None,
-            "Chemistry": sum(correct_by_category["Chemistry"]) / len(correct_by_category["Chemistry"]) * 100 if len(correct_by_category["Chemistry"]) else None,
-            "Other": sum(correct_by_category["Other"]) / len(correct_by_category["Other"]) * 100 if len(correct_by_category["Other"]) else None,
+            category: sum(correct_list) / len(correct_list) * 100 if correct_list else None
+            for category, correct_list in correct_by_category.items()
         },
         "num_questions": n,
         "timestamp": datetime.now().isoformat(),
