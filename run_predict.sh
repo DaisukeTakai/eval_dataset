@@ -1,13 +1,12 @@
 #!/bin/bash
 #SBATCH --job-name=predict
 #SBATCH --partition=P12
-#SBATCH --nodelist=osk-gpu86
 #SBATCH --nodes=1
-#SBATCH --gpus-per-node=8
-#SBATCH --cpus-per-task=240
+#SBATCH --gpus-per-node=4
+#SBATCH --cpus-per-task=40
 #SBATCH --time=24:00:00
-#SBATCH --output=/home/Competition2025/P12/P12U017/slurm_logs/%x-%j.out
-#SBATCH --error=/home/Competition2025/P12/P12U017/slurm_logs/%x-%j.err
+#SBATCH --output=/home/Competition2025/P12/%u/slurm_logs/%x-%j.out
+#SBATCH --error=/home/Competition2025/P12/%u/slurm_logs/%x-%j.err
 #--- log用 --------------------------------------------------------
 log() {
   echo "$(date '+%Y-%m-%d %H:%M:%S') [${1^^}] ${*:2}"
@@ -36,7 +35,7 @@ mkdir -p "$HF_HOME"
 echo "HF cache dir : $HF_HOME"                   # デバッグ用
 
 #--- GPU 準備 監視 ------------------------------------------------
-export CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
+export CUDA_VISIBLE_DEVICES=0,1,2,3,4 #,5,6,7
 
 ulimit -v unlimited
 ulimit -m unlimited

@@ -1,13 +1,12 @@
 #!/bin/bash
 #SBATCH --job-name=judge
 #SBATCH --partition=P12
-#SBATCH --nodelist=osk-gpu86
 #SBATCH --nodes=1
-#SBATCH --gpus-per-node=4
-#SBATCH --cpus-per-task=40
+#SBATCH --gpus-per-node=8
+#SBATCH --cpus-per-task=120
 #SBATCH --time=12:00:00
-#SBATCH --output=/home/Competition2025/P12/P12U017/slurm_logs/%x-%j.out
-#SBATCH --error=/home/Competition2025/P12/P12U017/slurm_logs/%x-%j.err
+#SBATCH --output=/home/Competition2025/P12/%u/slurm_logs/%x-%j.out
+#SBATCH --error=/home/Competition2025/P12/%u/slurm_logs/%x-%j.err
 #--- log用 --------------------------------------------------------
 log() {
   echo "$(date '+%Y-%m-%d %H:%M:%S') [${1^^}] ${*:2}"
@@ -37,7 +36,7 @@ mkdir -p "$HF_HOME"
 # echo "HF cache dir : $HF_HOME"		# デバッグ用
 
 #--- GPU 準備 監視 ----------------------------------------------------
-export CUDA_VISIBLE_DEVICES=0,1,2,3 #,4,5,6,7	# CUDAの数で要修正
+export CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7	# CUDAの数で要修正
 
 ulimit -v unlimited
 ulimit -m unlimited
@@ -51,12 +50,16 @@ cd ${SLURM_TMPDIR:-$HOME}/llm_bridge_prod/eval_dataset/
 mkdir -p judged
 
 #--- vLLM 起動（GPU数要修正）--------------------------------------------
+# MoEモデルの実行には--enable-expert-parallelが必要ぽい
+# export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+
 vllm serve /home/Competition2025/P12/shareP12/models/Qwen3-235B-A22B-FP8/ \
-  --tensor-parallel-size 4 \
+  --tensor-parallel-size 8 \
   --reasoning-parser deepseek_r1 \
   --rope-scaling '{"rope_type":"yarn","factor":4.0,"original_max_position_embeddings":32768}' \
   --max-model-len 131072 \
-  --gpu-memory-utilization 0.95 \
+  --gpu-memory-utilization 0.9 \
+  --enable-expert-parallel \
   > vllm.log 2>&1 &
 pid_vllm=$!
 
