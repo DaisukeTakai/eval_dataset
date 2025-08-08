@@ -1,6 +1,7 @@
 # データセットの評価コード
 
 ## 環境構築
+運営配布のGithubやNotionを参照してください。
 ```
 #--- モジュール & Conda --------------------------------------------
 module purge
@@ -19,8 +20,6 @@ srun --partition=P01 \
      --gpus-per-node=8 \
      --time=00:30:00 \
      --pty bash -l
-     
-# install
 
 conda install -c conda-forge --file requirements.txt
 pip install \
@@ -31,27 +30,26 @@ pip install \
 ```
 ## 準備作業
 ### ファイルの置き場
-$HOME/llm_bridge_prod/以下に置いてください。
+`$HOME/llm_bridge_prod/`以下に`eval_dataset`フォルダを置いてください。
 
 ### 環境に合わせて下記点をご修正ください
-run_predict.sh/run_judge.shの冒頭に  
-#SBATCH --output=/home/Competition2025/P12/P12U017/slurm_logs/%x-%j.out  
-#SBATCH --error=/home/Competition2025/P12/P12U017/slurm_logs/%x-%j.err  
+`mkdir -p slurm_logs`  
 slurmのlogs出力先を指定している行があります。  
-各自の環境に合わせて修正してからお使いください。
+各自の環境に合わせて修正してからお使いください。  
 
 ## 問題回答用のslurmファイル
 '''
-sbatch run_predict.sh
+sbatch --nodelist=osk-gpu86 run_predict.sh
 '''
 を実行してください。  
-モデル名・データセット名の指定は、conf/config.yaml
+モデル名・データセット名の指定は、`conf/config.yaml`
 
 ## 正解判定用のslurmファイル
-
-run_judge.sh  
+'''
+sbatch --nodelist=osk-gpu86 run_judge.sh
+'''
 モデル名の指摘は、conf/config.yaml
-```
+
 ## 動作確認済みモデル （vLLM対応モデルのみ動作可能です）
 - 問題回答: Qwen3 8B
 - 正解判定: Qwen3 235B FP8
