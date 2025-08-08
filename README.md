@@ -38,16 +38,16 @@ slurmのlogs出力先を指定している行があります。
 各自の環境に合わせて修正してからお使いください。  
 
 ## 問題回答用のslurmファイル
-'''
+```
 sbatch --nodelist=osk-gpu86 run_predict.sh
-'''
+```
 を実行してください。  
 モデル名・データセット名の指定は、`conf/config.yaml`
 
 ## 正解判定用のslurmファイル
-'''
+```
 sbatch --nodelist=osk-gpu86 run_judge.sh
-'''
+```
 モデル名の指摘は、conf/config.yaml
 
 ## 動作確認済みモデル （vLLM対応モデルのみ動作可能です）
