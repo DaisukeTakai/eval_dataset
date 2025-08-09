@@ -1,9 +1,0 @@
-{
-    "model_name": "/home/Competition2025/P12/shareP12/models/Qwen3-32B",
-    "overall_accuracy": 87.68,
-    "accuracy_per_category": {
-        "null": 87.68472906403942
-    },
-    "num_questions": 609,
-    "timestamp": "2025-08-08T22:09:53.041098"
-}
