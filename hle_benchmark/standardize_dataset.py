@@ -6,7 +6,7 @@ args に以下のキー/属性を持たせて渡す:
     question_col   (任意) str
     answer_col     (任意) str
     thinking_col   (任意) str
-    id_col         (任意) str または None
+    id_col         (任意) str または null
 
 戻り値:
     dict[Optional[str], DatasetDict]  # config名 -> DatasetDict
