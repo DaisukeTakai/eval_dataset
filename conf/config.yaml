@@ -1,5 +1,10 @@
 dataset: toloka/u-math # KbsdJames/Omni-MATH
 
+id_col: uuid
+question_col: question
+answer_col: golden_answer
+thinking_col: problem_statement
+
 provider: vllm # [vllm]
 
 base_url: http://localhost:8000/v1
