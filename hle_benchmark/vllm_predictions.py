@@ -29,6 +29,7 @@ from openai import AsyncOpenAI
 from tqdm.asyncio import tqdm_asyncio
 from hle_benchmark._configs import Config
 import re
+from hle_benchmark.standardize_dataset import standardize_dataset
 
 SYSTEM_EXACT_ANSWER = "Your response should be in the following format:\nExplanation: {your explanation for your final answer}\nExact Answer: {your succinct, final answer}\nConfidence: {your confidence score between 0% and 100% for your answer}"
 
@@ -49,7 +50,7 @@ def format_message(args, question):
 
     system_role = "user" if "o1" in args.model else "system" # o1 no sys prompt
     messages = [
-        {"role": system_role, "content": system_prompt}, 
+        {"role": system_role, "content": system_prompt},
         {"role": "user", "content": content}
     ]
     return messages
@@ -103,7 +104,9 @@ def main(args: Config):
     )
 
     assert args.num_workers > 1, "num_workers must be 2 or greater"
-    dataset = load_dataset(args.dataset, split="test")
+    #dataset = load_dataset(args.dataset, split="test")
+    dd = standardize_dataset(args, split="train")
+    dataset = dd["train"]
 
     print(f"元データセット列名: {dataset.column_names}")
 

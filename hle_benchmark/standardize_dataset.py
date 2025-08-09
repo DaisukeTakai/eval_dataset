@@ -1,24 +1,11 @@
-"""
-HuggingFace Datasets 標準化モジュール（args指定版）
-
-args に以下のキー/属性を持たせて渡す:
-    dataset        (必須) str
-    question_col   (任意) str
-    answer_col     (任意) str
-    thinking_col   (任意) str
-    id_col         (任意) str または null
-
-戻り値:
-    dict[Optional[str], DatasetDict]  # config名 -> DatasetDict
-"""
-
-from __future__ import annotations
+from datasets import load_dataset, DatasetDict, Dataset, get_dataset_config_names, concatenate_datasets
 from typing import Optional, Dict, Union
-from datasets import load_dataset, DatasetDict, Dataset, get_dataset_config_names
 import logging
 
-
-def standardize_dataset(args: Union[dict, "argparse.Namespace"]) -> Dict[Optional[str], DatasetDict]:
+def standardize_dataset(
+    args: Union[dict, "argparse.Namespace"],
+    split: Optional[str] = None,  # ← split指定でそのsplitだけを読み込み＆結合
+) -> Dict[Optional[str], DatasetDict] | DatasetDict:
     # Namespace → dict に統一
     if not isinstance(args, dict):
         args = vars(args)
@@ -55,22 +42,28 @@ def standardize_dataset(args: Union[dict, "argparse.Namespace"]) -> Dict[Optiona
     def _add_sequential_id(ds: Dataset) -> Dataset:
         return ds.map(lambda ex, idx: {"id": str(idx + 1)}, with_indices=True)
 
-    logger.info(f"[start] dataset={dataset_name}")
+    logger.info(f"[start] dataset={dataset_name} split={split!r}")
     configs = get_dataset_config_names(dataset_name)
+
     if not configs:
-        datasets_by_cfg = {None: load_dataset(dataset_name)}
+        datasets_by_cfg = {
+            None: load_dataset(dataset_name, split=split) if split else load_dataset(dataset_name)
+        }
     else:
-        datasets_by_cfg = {cfg: load_dataset(dataset_name, cfg) for cfg in configs}
+        datasets_by_cfg = {
+            cfg: load_dataset(dataset_name, cfg, split=split) if split else load_dataset(dataset_name, cfg)
+            for cfg in configs
+        }
 
     results: Dict[Optional[str], DatasetDict] = {}
     for cfg, ds_or_dd in datasets_by_cfg.items():
         if isinstance(ds_or_dd, Dataset):
-            dd = DatasetDict({"train": ds_or_dd})
+            dd = DatasetDict({(split or "train"): ds_or_dd})
         else:
             dd = ds_or_dd
 
         std_splits = {}
-        for split, ds in dd.items():
+        for split_name, ds in dd.items():
             if not isinstance(ds, Dataset):
                 continue
 
@@ -98,18 +91,16 @@ def standardize_dataset(args: Union[dict, "argparse.Namespace"]) -> Dict[Optiona
             if t_col_real and t_col_real != "thinking":
                 ds = _safe_rename(ds, t_col_real, "thinking")
 
-            std_splits[split] = ds
+            std_splits[split_name] = ds
 
         results[cfg] = DatasetDict(std_splits)
 
+    # ★ split指定があれば全configを結合して返す
+    if split:
+        merged = concatenate_datasets(
+            [dd[split] for dd in results.values() if split in dd]
+        )
+        return DatasetDict({split: merged})
+
     logger.info("[done]")
     return results
-
-
-if __name__ == "__main__":
-    import yaml
-    with open("conf/config.yaml", "r", encoding="utf-8") as f:
-        args = yaml.safe_load(f) or {}
-
-    datasets = standardize_dataset(args)
-    print(datasets)
