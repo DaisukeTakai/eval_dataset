@@ -1,13 +1,16 @@
 from datasets import load_dataset, DatasetDict, Dataset, get_dataset_config_names, concatenate_datasets
 from typing import Optional, Dict, Union
 import logging
+from omegaconf import DictConfig
 
 def standardize_dataset(
     args: Union[dict, "argparse.Namespace"],
     split: Optional[str] = None,  # ← split指定でそのsplitだけを読み込み＆結合
 ) -> Dict[Optional[str], DatasetDict] | DatasetDict:
     # Namespace → dict に統一
-    if not isinstance(args, dict):
+    if isinstance(args, DictConfig):
+        args = dict(args)
+    elif not isinstance(args, dict):
         args = vars(args)
 
     dataset_name = args.get("dataset")
