@@ -2,7 +2,11 @@ judged/*
 predictions/*
 leaderboard/*
 outputs/*
-*/.gitkeep
+
+!judged/.gitkeep
+!predictions/.gitkeep
+!leaderboard/.gitkeep
+!outputs/.gitkeep
 
 nvidia-smi.log
 vllm.log
