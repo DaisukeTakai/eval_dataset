@@ -104,9 +104,9 @@ def main(args: Config):
     )
 
     assert args.num_workers > 1, "num_workers must be 2 or greater"
-    #dataset = load_dataset(args.dataset, split="test")
-    dd = standardize_dataset(args, split=args.split)
-    dataset = dd[args.split]
+    dataset = load_dataset(args.dataset, split="test")
+    #dd = standardize_dataset(args)
+    #dataset = dd[args.split]
 
     print(f"元データセット列名: {dataset.column_names}")
 
