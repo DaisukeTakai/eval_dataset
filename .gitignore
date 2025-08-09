@@ -1,6 +1,8 @@
 judged/*
 predictions/*
-outputs/*
 leaderboard/*
+outputs/*
+*/.gitkeep
+
 nvidia-smi.log
 vllm.log
