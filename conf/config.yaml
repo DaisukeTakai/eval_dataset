@@ -4,6 +4,7 @@ id_col: uuid
 question_col: question
 answer_col: golden_answer
 thinking_col: problem_statement
+split: test
 
 provider: vllm # [vllm]
 
