@@ -1,4 +1,6 @@
-judged/
-predictions/
+judged/*
+predictions/*
+outputs/*
+leaderboard/*
 nvidia-smi.log
 vllm.log
