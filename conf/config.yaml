@@ -1,4 +1,4 @@
-dataset: KbsdJames/Omni-MATH # cais/hle
+dataset: toloka/u-math # KbsdJames/Omni-MATH
 
 provider: vllm # [vllm]
 
