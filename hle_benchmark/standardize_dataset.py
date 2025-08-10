@@ -1,13 +1,15 @@
 from datasets import load_dataset, DatasetDict, Dataset, get_dataset_config_names, concatenate_datasets
-from typing import Optional, Dict, Union
+from typing import Optional, Union
 import logging
 from omegaconf import DictConfig
+import argparse
+
 
 def standardize_dataset(
     args: Union[dict, "argparse.Namespace"],
-    split: Optional[str] = None,  # ← split指定でそのsplitだけを読み込み＆結合
-) -> Dict[Optional[str], DatasetDict] | DatasetDict:
-    # Namespace → dict に統一
+    split: Optional[str] = None,
+) -> DatasetDict:
+    # Namespace / DictConfig → dict に統一
     if isinstance(args, DictConfig):
         args = dict(args)
     elif not isinstance(args, dict):
@@ -43,11 +45,24 @@ def standardize_dataset(
         return ds.rename_column(src, dst)
 
     def _add_sequential_id(ds: Dataset) -> Dataset:
+        # 1始まりの文字列ID
         return ds.map(lambda ex, idx: {"id": str(idx + 1)}, with_indices=True)
+
+    def _concat_if_same_features(parts: list[Dataset]) -> Dataset:
+        """featuresが全て一致している場合のみconcatenate"""
+        if len(parts) == 1:
+            return parts[0]
+        ref_features = parts[0].features
+        for p in parts[1:]:
+            assert p.features == ref_features, (
+                f"[features mismatch]\nref={ref_features}\ncur={p.features}"
+            )
+        return concatenate_datasets(parts)
 
     logger.info(f"[start] dataset={dataset_name} split={split!r}")
     configs = get_dataset_config_names(dataset_name)
 
+    # configごとにロード
     if not configs:
         datasets_by_cfg = {
             None: load_dataset(dataset_name, split=split) if split else load_dataset(dataset_name)
@@ -58,7 +73,8 @@ def standardize_dataset(
             for cfg in configs
         }
 
-    results: Dict[Optional[str], DatasetDict] = {}
+    # 前処理（列の標準化）を config × split で実施
+    prepared_by_cfg: dict[Optional[str], DatasetDict] = {}
     for cfg, ds_or_dd in datasets_by_cfg.items():
         if isinstance(ds_or_dd, Dataset):
             dd = DatasetDict({(split or "train"): ds_or_dd})
@@ -81,12 +97,15 @@ def standardize_dataset(
             t_col_real = resolve_override(thinking_col)
             id_col_real = resolve_override(id_col) if id_col is not None else None
 
-            if "id" not in {c.lower() for c in ds.column_names}:
+            # id 列の整備（なければ付与／別名ならrename）
+            lower_names = {c.lower() for c in ds.column_names}
+            if "id" not in lower_names:
                 if id_col is not None and id_col_real and id_col_real != "id":
                     ds = ds.rename_column(id_col_real, "id")
                 else:
                     ds = _add_sequential_id(ds)
 
+            # 他の列の標準化
             if q_col_real and q_col_real != "question":
                 ds = _safe_rename(ds, q_col_real, "question")
             if a_col_real and a_col_real != "answer":
@@ -96,14 +115,31 @@ def standardize_dataset(
 
             std_splits[split_name] = ds
 
-        results[cfg] = DatasetDict(std_splits)
+        prepared_by_cfg[cfg] = DatasetDict(std_splits)
 
-    # ★ split指定があれば全configを結合して返す
+    # —— 結合ロジック ——
     if split:
-        merged = concatenate_datasets(
-            [dd[split] for dd in results.values() if split in dd]
-        )
+        # 指定splitのみ、全configをconcat
+        parts = [dd[split] for dd in prepared_by_cfg.values() if split in dd]
+        if not parts:
+            raise ValueError(f"要求された split='{split}' はいずれのconfigにも存在しません")
+        merged = _concat_if_same_features(parts)
+        logger.info(f"[done] return merged split='{split}' ({len(parts)} parts)")
         return DatasetDict({split: merged})
 
-    logger.info("[done]")
-    return results
+    # split未指定：存在する全split名を集約し、各splitごとに全configをconcat
+    all_split_names = set()
+    for dd in prepared_by_cfg.values():
+        all_split_names.update(dd.keys())
+    if not all_split_names:
+        raise RuntimeError("結合対象の split が見つかりませんでした")
+
+    out = {}
+    for s in sorted(all_split_names):
+        parts = [dd[s] for dd in prepared_by_cfg.values() if s in dd]
+        merged = _concat_if_same_features(parts)
+        out[s] = merged
+        logger.info(f"[merge] split='{s}' parts={len(parts)}")
+
+    logger.info("[done] return merged all splits")
+    return DatasetDict(out)
