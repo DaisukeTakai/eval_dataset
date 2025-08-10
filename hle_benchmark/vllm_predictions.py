@@ -107,7 +107,7 @@ def main(args: Config):
     # dataset = load_dataset(args.dataset, split="test")
     dd = standardize_dataset(args)
     print(dd.keys())
-    dataset = dd[dd.keys()[0]]
+    dataset = dd[list(dd.keys())[0]]
 
     print(f"元データセット列名: {dataset.column_names}")
 

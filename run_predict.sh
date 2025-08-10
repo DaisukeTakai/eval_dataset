@@ -2,7 +2,7 @@
 #SBATCH --job-name=predict
 #SBATCH --partition=P12
 #SBATCH --nodes=1
-#SBATCH --gpus-per-node=8
+#SBATCH --gpus-per-node=2
 #SBATCH --cpus-per-task=40
 #SBATCH --time=24:00:00
 #SBATCH --output=/home/Competition2025/P12/%u/slurm_logs/%x-%j.out
@@ -35,7 +35,7 @@ mkdir -p "$HF_HOME"
 echo "HF cache dir : $HF_HOME"                   # デバッグ用
 
 #--- GPU 準備 監視 ------------------------------------------------
-export CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
+export CUDA_VISIBLE_DEVICES=0,1 #,2,3,4,5,6,7
 
 ulimit -v unlimited
 ulimit -m unlimited
@@ -50,23 +50,24 @@ mkdir -p predictions
 
 #--- vLLM 起動（8GPU）---------------------------------------------
 vllm serve /home/Competition2025/P12/shareP12/models/Qwen3-32B \
-  --tensor-parallel-size 8 \
+  --tensor-parallel-size 2 \
   --reasoning-parser deepseek_r1 \
   --rope-scaling '{"rope_type":"yarn","factor":4.0,"original_max_position_embeddings":32768}' \
   --max-model-len 131072 \
-  --gpu-memory-utilization 0.95 \
+  --gpu-memory-utilization 0.9 \
+  --port 8010 \
   > vllm.log 2>&1 &
 pid_vllm=$!
 
 #--- ヘルスチェック -----------------------------------------------
-until curl -s http://127.0.0.1:8000/health >/dev/null; do
+until curl -s http://127.0.0.1:8010/health >/dev/null; do
   echo "$(date +%T) vLLM starting …"
   sleep 10
 done
 echo "$(date +%T) vLLM READY"
 
 # モデル一覧を取得して変数に入れる（-s はサイレントモード）
-models=$(curl -s http://localhost:8000/v1/models)
+models=$(curl -s http://localhost:8010/v1/models)
 
 # 変数の中身を echo で出力
 echo "$models"
