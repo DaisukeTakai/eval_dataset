@@ -1,10 +1,9 @@
 dataset: toloka/u-math # KbsdJames/Omni-MATH
 
 id_col: uuid
-question_col: question
+question_col: problem_statement
 answer_col: golden_answer
-thinking_col: problem_statement
-split: test
+thinking_col: null
 
 provider: vllm # [vllm]
 
