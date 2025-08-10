@@ -109,17 +109,20 @@ def main(args: Config):
     print(dd.keys())
     dataset = dd[list(dd.keys())[0]]
 
-    print(f"元データセット列名: {dataset.column_names}")
+    print(f"データセット列名: {dataset.column_names}")
+    print(f"データセットの件数: {len(dataset)}件")
 
-    if "id" not in dataset.column_names:
-        dataset_length = len(dataset)
-        dataset = dataset.add_column("id", [i + 1 for i in range(dataset_length)])
+    # if "id" not in dataset.column_names:
+    #     dataset_length = len(dataset)
+    #     dataset = dataset.add_column("id", [i + 1 for i in range(dataset_length)])
 
-    dataset = dataset.filter(lambda item: item.get('image',"") == "")
+    dataset = dataset.filter(lambda item: item.get('image',"") in ("", None))
     dataset = dataset.to_dict()
 
     # convert to list of json for async parallelism
     questions = [dict(zip(dataset.keys(), values)) for values in zip(*dataset.values())]
+
+    print(questions[0:5])
 
     # If max_samples is set, limit the number of questions
     if args.max_samples:
@@ -128,7 +131,6 @@ def main(args: Config):
     dataset_name = os.path.basename(args.dataset)
     dataset_name = re.sub(r"[^\w\-]", "_", dataset_name)
     output_filepath = f"predictions/{dataset_name}_{os.path.basename(args.model)}.json"
-    # output_filepath = f"predictions/hle_{os.path.basename(args.model)}.json"
 
     # load only questions without responses
     if os.path.exists(output_filepath):
