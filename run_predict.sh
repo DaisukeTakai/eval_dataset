@@ -9,6 +9,7 @@
 #SBATCH --error=/home/Competition2025/P12/%u/slurm_logs/%x-%j.err
 #--- 環境変数設定 --------------------------------------------------
 PORT=8010
+GPU_NUM=$SLURM_GPUS_PER_NODE
 
 #--- log用 -------------------------------------------------------
 log() {
@@ -38,7 +39,7 @@ mkdir -p "$HF_HOME"
 echo "HF cache dir : $HF_HOME"                   # デバッグ用
 
 #--- GPU 準備 監視 ------------------------------------------------
-export CUDA_VISIBLE_DEVICES=0,1,2,3 #,4,5,6,7
+export CUDA_VISIBLE_DEVICES=$(seq -s, 0 $((GPU_NUM-1)))
 
 ulimit -v unlimited
 ulimit -m unlimited
@@ -53,7 +54,7 @@ mkdir -p predictions
 
 #--- vLLM 起動（8GPU）---------------------------------------------
 vllm serve /home/Competition2025/P12/shareP12/models/Qwen3-32B \
-  --tensor-parallel-size 4 \
+  --tensor-parallel-size $GPU_NUM \
   --reasoning-parser deepseek_r1 \
   --rope-scaling '{"rope_type":"yarn","factor":4.0,"original_max_position_embeddings":32768}' \
   --max-model-len 131072 \
