@@ -7,7 +7,10 @@
 #SBATCH --time=24:00:00
 #SBATCH --output=/home/Competition2025/P12/%u/slurm_logs/%x-%j.out
 #SBATCH --error=/home/Competition2025/P12/%u/slurm_logs/%x-%j.err
-#--- log用 --------------------------------------------------------
+#--- 環境変数設定 --------------------------------------------------
+PORT=8010
+
+#--- log用 -------------------------------------------------------
 log() {
   echo "$(date '+%Y-%m-%d %H:%M:%S') [${1^^}] ${*:2}"
 }
@@ -55,19 +58,19 @@ vllm serve /home/Competition2025/P12/shareP12/models/Qwen3-32B \
   --rope-scaling '{"rope_type":"yarn","factor":4.0,"original_max_position_embeddings":32768}' \
   --max-model-len 131072 \
   --gpu-memory-utilization 0.9 \
-  --port 8010 \
+  --port $PORT \
   > vllm.log 2>&1 &
 pid_vllm=$!
 
 #--- ヘルスチェック -----------------------------------------------
-until curl -s http://127.0.0.1:8010/health >/dev/null; do
+until curl -s http://127.0.0.1:${PORT}/health >/dev/null; do
   echo "$(date +%T) vLLM starting …"
   sleep 10
 done
 echo "$(date +%T) vLLM READY"
 
 # モデル一覧を取得して変数に入れる（-s はサイレントモード）
-models=$(curl -s http://localhost:8010/v1/models)
+models=$(curl -s http://localhost:${PORT}/v1/models)
 
 # 変数の中身を echo で出力
 echo "$models"
