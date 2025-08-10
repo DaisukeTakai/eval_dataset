@@ -35,6 +35,7 @@ from datasets import load_dataset, Value
 from datetime import datetime
 import re
 from collections import defaultdict
+from hle_benchmark.standardize_dataset import standardize_dataset
 
 client = AsyncOpenAI(
     base_url="http://localhost:8000/v1",
@@ -236,7 +237,7 @@ def dump_metrics(args, predictions, total_questions, all_questions):
     with open(output_folder_name + "/results.jsonl", "w") as f:
         f.writelines([json.dumps(l) + "\n" for l in results])
     with open(output_folder_name + "/summary.json", "w") as f:
-        json.dump(summary, f, indent=4) 
+        json.dump(summary, f, indent=4)
 
 
 def main(args):
@@ -247,14 +248,18 @@ def main(args):
 
     output_filepath = f"judged/judged_{dataset_name}_{os.path.basename(args.model)}.json"
 
-    dataset = load_dataset(args.dataset, split="test")
+    #dataset = load_dataset(args.dataset, split="test")
+    dd = standardize_dataset(args)
+    print(dd.keys())
+    dataset = dd[list(dd.keys())[0]]
 
-    print(f"元データセット列名: {dataset.column_names}")
+    print(f"データセット列名: {dataset.column_names}")
+    print(f"データセットの件数: {len(dataset)}件")
 
-    if "id" not in dataset.column_names:
-        dataset_length = len(dataset)
-        dataset = dataset.add_column("id", [i + 1 for i in range(dataset_length)])
-        dataset = dataset.cast_column("id", Value("string"))
+    # if "id" not in dataset.column_names:
+    #     dataset_length = len(dataset)
+    #     dataset = dataset.add_column("id", [i + 1 for i in range(dataset_length)])
+    #     dataset = dataset.cast_column("id", Value("string"))
 
     dataset = dataset.to_dict()
 
