@@ -1,4 +1,11 @@
-from datasets import load_dataset, DatasetDict, Dataset, get_dataset_config_names, concatenate_datasets, Value
+from datasets import (
+    load_dataset,
+    DatasetDict,
+    Dataset,
+    get_dataset_config_names,
+    concatenate_datasets,
+    Value,
+)
 from typing import Optional, Union, Dict, List
 import logging
 from omegaconf import DictConfig
@@ -37,7 +44,9 @@ def standardize_dataset(
     thinking_col = args.get("thinking_col")
     id_col = args.get("id_col")
 
-    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s - %(message)s")
+    logging.basicConfig(
+        level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s - %(message)s"
+    )
     logger = logging.getLogger(__name__)
 
     # ---------- helpers ----------
@@ -58,7 +67,9 @@ def standardize_dataset(
         cmap = _colmap(ds)
         if dst.lower() in cmap and cmap[dst.lower()] != src:
             current = cmap[dst.lower()]
-            free = _find_free_name(set(n.lower() for n in ds.column_names), f"{dst}_orig")
+            free = _find_free_name(
+                set(n.lower() for n in ds.column_names), f"{dst}_orig"
+            )
             logger.warning(f"[rename-collision] {dst} 列を退避: {current} -> {free}")
             ds = ds.rename_column(current, free)
         logger.info(f"rename {src} -> {dst}")
@@ -76,20 +87,19 @@ def standardize_dataset(
         """
         cmap = _colmap(ds)
         if "id" in cmap:
-            id_name = cmap["id"]
+            if cmap["id"] != "id":
+                ds = _safe_rename(ds, cmap["id"], "id")
         elif id_col_real:
             ds = _safe_rename(ds, id_col_real, "id")
-            id_name = "id"
         else:
             # 1始まりの文字列IDを追加
             ds = ds.map(lambda _, idx: {"id": str(idx + 1)}, with_indices=True)
-            id_name = "id"
 
         # 文字列化（既に string なら no-op）
         try:
-            ds = ds.cast_column(id_name, Value("string"))
+            ds = ds.cast_column("id", Value("string"))
         except Exception:
-            ds = ds.map(lambda ex: {"id": str(ex[id_name])})
+            ds = ds.map(lambda ex: {"id": str(ex["id"])})
         return ds
 
     def _concat_if_same_features(parts: List[Dataset]) -> Dataset:
@@ -97,19 +107,21 @@ def standardize_dataset(
             return parts[0]
         ref_features = parts[0].features
         for p in parts[1:]:
-            assert p.features == ref_features, (
-                f"[features mismatch]\nref={ref_features}\ncur={p.features}"
-            )
+            assert (
+                p.features == ref_features
+            ), f"[features mismatch]\nref={ref_features}\ncur={p.features}"
         return concatenate_datasets(parts)
 
     def _prefix_id(ds: Dataset, tmp_col: str) -> Dataset:
         """全行の id を config名-id に置換（config名が空の場合はそのまま）"""
+
         def _mapper(ex):
             cfgv = ex.get(tmp_col, "")
             if cfgv:
                 return {"id": f"{cfgv}-{ex['id']}"}
             else:
                 return {"id": ex["id"]}
+
         ds = ds.map(_mapper)
         if tmp_col in ds.column_names:
             ds = ds.remove_columns([tmp_col])
@@ -121,11 +133,19 @@ def standardize_dataset(
 
     if not configs:
         datasets_by_cfg: Dict[Optional[str], Union[Dataset, DatasetDict]] = {
-            None: load_dataset(dataset_name, split=split) if split else load_dataset(dataset_name)
+            None: (
+                load_dataset(dataset_name, split=split, trust_remote_code=True)
+                if split
+                else load_dataset(dataset_name, trust_remote_code=True)
+            )
         }
     else:
         datasets_by_cfg = {
-            cfg: load_dataset(dataset_name, cfg, split=split) if split else load_dataset(dataset_name, cfg)
+            cfg: (
+                load_dataset(dataset_name, cfg, split=split, trust_remote_code=True)
+                if split
+                else load_dataset(dataset_name, cfg, trust_remote_code=True)
+            )
             for cfg in configs
         }
 
@@ -162,7 +182,9 @@ def standardize_dataset(
             cfg_label = str(cfg) if cfg is not None else ""
             tmp_col = "__cfg__"
             if tmp_col.lower() in _colmap(ds):
-                tmp_col = _find_free_name(set(n.lower() for n in ds.column_names), "__cfg__")
+                tmp_col = _find_free_name(
+                    set(n.lower() for n in ds.column_names), "__cfg__"
+                )
             ds = ds.map(lambda _: {tmp_col: cfg_label})
 
             std_splits[split_name] = ds
@@ -177,16 +199,22 @@ def standardize_dataset(
             if split in dd:
                 parts.append(dd[split])
                 if tmp_col_name is None:
-                    cands = [c for c in dd[split].column_names if c.startswith("__cfg__")]
+                    cands = [
+                        c for c in dd[split].column_names if c.startswith("__cfg__")
+                    ]
                     tmp_col_name = cands[0] if cands else "__cfg__"
 
         if not parts:
-            raise ValueError(f"要求された split='{split}' はいずれのconfigにも存在しません")
+            raise ValueError(
+                f"要求された split='{split}' はいずれのconfigにも存在しません"
+            )
 
         merged = _concat_if_same_features(parts)
         merged = _prefix_id(merged, tmp_col_name)
 
-        logger.info(f"[done] return split='{split}' parts={len(parts)} size={len(merged)}")
+        logger.info(
+            f"[done] return split='{split}' parts={len(parts)} size={len(merged)}"
+        )
         return DatasetDict({split: merged})
 
     all_split_names = set()

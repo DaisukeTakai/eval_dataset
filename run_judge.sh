@@ -2,7 +2,7 @@
 #SBATCH --job-name=judge
 #SBATCH --partition=P12
 #SBATCH --nodes=1
-#SBATCH --gpus-per-node=8
+#SBATCH --gpus-per-node=4
 #SBATCH --cpus-per-task=120
 #SBATCH --time=12:00:00
 #SBATCH --output=/home/Competition2025/P12/%u/slurm_logs/%x-%j.out

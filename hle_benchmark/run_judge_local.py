@@ -37,12 +37,6 @@ import re
 from collections import defaultdict
 from hle_benchmark.standardize_dataset import standardize_dataset
 
-client = AsyncOpenAI(
-    base_url="http://localhost:8000/v1",
-    timeout=300.0,
-    max_retries=1,
-    api_key=os.environ.get("OPENAI_API_KEY"),
-)
 
 JUDGE_PROMPT = """Judge whether the following [response] to [question] is correct or not based on the precise and unambiguous [correct_answer] below.
 
@@ -71,7 +65,7 @@ class ExtractedAnswer(BaseModel):
     strict: Literal[True] # 100% reliability
 
 
-async def extract_answer(args, question, correct_answer, response):
+async def extract_answer(args, client, question, correct_answer, response):
     prompt = JUDGE_PROMPT.format(question=question, correct_answer=correct_answer, response=response)
     try:
         response = await client.beta.chat.completions.parse(
@@ -94,7 +88,7 @@ async def extract_answer(args, question, correct_answer, response):
         print("Error:", e)
         return None
 
-async def add_judge_response(args, question, predictions):
+async def add_judge_response(args, client, question, predictions):
     unique_id = question.get("id")
     prediction = copy.deepcopy(predictions[unique_id]) # not in-place
     question_text = question.get("question") or question.get('solution')
@@ -105,7 +99,7 @@ async def add_judge_response(args, question, predictions):
         return unique_id, prediction
 
     response = prediction["response"]
-    content = await extract_answer(args, question_text, correct_answer, response)
+    content = await extract_answer(args, client, question_text, correct_answer, response)
 
     if content is not None:
         prediction["judge_response"] = content # local in-place
@@ -113,10 +107,10 @@ async def add_judge_response(args, question, predictions):
     else:
         return None, None
 
-async def judge_all_responses(args, questions, predictions):
+async def judge_all_responses(args, client, questions, predictions):
     async def bound_func(question):
         async with semaphore:
-            content = await add_judge_response(args, question, predictions)
+            content = await add_judge_response(args, client, question, predictions)
             return content
 
     semaphore = asyncio.Semaphore(args.num_workers)
@@ -241,6 +235,13 @@ def dump_metrics(args, predictions, total_questions, all_questions):
 
 
 def main(args):
+    client = AsyncOpenAI(
+        base_url=args.base_url,
+        timeout=300.0,
+        max_retries=1,
+        api_key=os.environ.get("OPENAI_API_KEY"),
+    )
+
     assert args.num_workers > 1, "num_workers must be 2 or greater"
 
     dataset_name = os.path.basename(args.dataset)
@@ -287,7 +288,7 @@ def main(args):
     print(f"[DEBUG] 判定対象 questions: {len(questions)} 件 / 全 questions: {total_questions} 件")
 
      # API will only be called for unjudged responses
-    results = asyncio.run(judge_all_responses(args, questions, predictions))
+    results = asyncio.run(judge_all_responses(args, client, questions, predictions))
 
     for unique_id, predictions in results:
         if unique_id is not None:

@@ -36,7 +36,7 @@ export NCCL_SOCKET_IFNAME=enp25s0np0
 export NVTE_FUSED_ATTN=0
 
 mkdir -p "$HF_HOME"
-echo "HF cache dir : $HF_HOME"                   # デバッグ用
+echo "HF cache dir : $HF_HOME"
 
 #--- GPU 準備 監視 ------------------------------------------------
 export CUDA_VISIBLE_DEVICES=$(seq -s, 0 $((GPU_NUM-1)))

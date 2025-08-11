@@ -16,7 +16,7 @@ reasoning: true
 # sample with multimodal is 2500, so text-only sample is about 2400
 num_workers: 2400
 
-# 全件やりたいときはコメントアウト
+# 全件やりたいときはnull
 max_samples: null
 
 judge: /home/Competition2025/P12/shareP12/models/Qwen3-235B-A22B-FP8/
