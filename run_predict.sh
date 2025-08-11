@@ -18,6 +18,8 @@ log() {
 log INFO "JOB開始: ${SLURM_JOB_NAME}-${SLURM_JOB_ID}"
 
 #--- モジュール & Conda -------------------------------------------
+unset LD_LIBRARY_PATH
+
 module purge
 module load cuda/12.6 miniconda/24.7.1-py312
 module load cudnn/9.6.0
