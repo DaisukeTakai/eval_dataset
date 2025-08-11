@@ -5,11 +5,13 @@ question_col: problem_statement
 answer_col: golden_answer
 thinking_col: null
 
-provider: vllm # [vllm]
+provider: vllm
 
 base_url: http://localhost:8010/v1
 
+# 最後に / があるとエラーになるので注意！
 model: /home/Competition2025/P12/shareP12/models/Qwen3-32B # Qwen/Qwen3-32B
+
 max_completion_tokens: 32768
 reasoning: true
 
