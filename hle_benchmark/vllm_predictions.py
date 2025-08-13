@@ -37,21 +37,23 @@ SYSTEM_MC = "Your response should be in the following format:\nExplanation: {you
 
 
 def format_message(args, question):
-    answer_type = question.get('answer_type')
-    system_prompt = SYSTEM_EXACT_ANSWER if answer_type == 'exact_match' else SYSTEM_MC
-    question_text = question.get('question') or question.get('solution')
+    answer_type = question.get("answer_type")
+    system_prompt = SYSTEM_EXACT_ANSWER if answer_type == "exact_match" else SYSTEM_MC
+    question_text = question.get("question") or question.get("solution")
 
     text_content = dict(type="text", text=question_text)
-    if question.get('image'): # "" if not multi-modal
-        image_content = dict(type="image_url", image_url=dict(url=question.get('image')))
+    if question.get("image"):  # "" if not multi-modal
+        image_content = dict(
+            type="image_url", image_url=dict(url=question.get("image"))
+        )
         content = [text_content, image_content]
     else:
         content = [text_content]
 
-    system_role = "user" if "o1" in args.model else "system" # o1 no sys prompt
+    system_role = "user" if "o1" in args.model else "system"  # o1 no sys prompt
     messages = [
         {"role": system_role, "content": system_prompt},
-        {"role": "user", "content": content}
+        {"role": "user", "content": content},
     ]
     return messages
 
@@ -76,7 +78,7 @@ async def attempt_question(args, question):
         print("Error:", e)
         return None
 
-    if content is None: # failed
+    if content is None:  # failed
         return None
 
     return question.get("id"), content, tokens
@@ -93,6 +95,7 @@ async def attempt_all(args, questions):
         tasks = [bound_func(q) for q in questions]
         results = await tqdm_asyncio.gather(*tasks)
     return results
+
 
 def main(args: Config):
     global client
@@ -116,7 +119,7 @@ def main(args: Config):
     #     dataset_length = len(dataset)
     #     dataset = dataset.add_column("id", [i + 1 for i in range(dataset_length)])
 
-    dataset = dataset.filter(lambda item: item.get('image',"") in ("", None))
+    dataset = dataset.filter(lambda item: item.get("image", "") in ("", None))
     dataset = dataset.to_dict()
 
     # convert to list of json for async parallelism
@@ -126,7 +129,7 @@ def main(args: Config):
 
     # If max_samples is set, limit the number of questions
     if args.max_samples:
-        questions = questions[:args.max_samples]
+        questions = questions[: args.max_samples]
 
     dataset_name = os.path.basename(args.dataset)
     dataset_name = re.sub(r"[^\w\-]", "_", dataset_name)
@@ -144,13 +147,13 @@ def main(args: Config):
 
     # You can rerun this script multiple times if there are failed API calls
     for result in results:
-        if result is None: # API call failed
+        if result is None:  # API call failed
             continue
         unique_id, response, usage = result
         predictions[unique_id] = {
             "model": args.model,
             "response": response,
-            "usage": usage
+            "usage": usage,
         }
 
     # cache responses

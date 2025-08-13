@@ -19,6 +19,7 @@ log INFO "JOB開始: ${SLURM_JOB_NAME}-${SLURM_JOB_ID}"
 
 #--- モジュール & Conda -------------------------------------------
 unset LD_LIBRARY_PATH
+unset PYTHONPATH
 
 module purge
 module load cuda/12.6 miniconda/24.7.1-py312
@@ -55,11 +56,12 @@ mkdir -p predictions
 #mkdir -p judged
 
 #--- vLLM 起動（8GPU）---------------------------------------------
-vllm serve /home/Competition2025/P12/shareP12/models/Qwen3-32B \
+# --rope-scaling '{"rope_type":"yarn","factor":2.0,"original_max_position_embeddings":32768}' \
+vllm serve /home/Competition2025/P12/shareP12/models/Qwen3-32B-FP8 \
   --tensor-parallel-size $GPU_NUM \
   --reasoning-parser deepseek_r1 \
-  --rope-scaling '{"rope_type":"yarn","factor":4.0,"original_max_position_embeddings":32768}' \
-  --max-model-len 131072 \
+  --kv-cache-dtype fp8 \
+  --max-model-len 32768 \
   --gpu-memory-utilization 0.9 \
   --port $PORT \
   > vllm.log 2>&1 &
@@ -80,6 +82,7 @@ echo "$models"
 
 # hydra-core対策
 export PYTHONPATH=$HOME/.conda/envs/llmbench/lib/python3.12/site-packages:$PYTHONPATH
+echo "$LD_LIBRARY_PATH"
 
 #--- 推論 ---------------------------------------------------------
 python predict.py #> predict.log 2>&1

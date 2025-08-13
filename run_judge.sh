@@ -62,8 +62,8 @@ mkdir -p judged
 vllm serve /home/Competition2025/P12/shareP12/models/Qwen3-235B-A22B-FP8/ \
   --tensor-parallel-size $GPU_NUM \
   --reasoning-parser deepseek_r1 \
-  --rope-scaling '{"rope_type":"yarn","factor":4.0,"original_max_position_embeddings":32768}' \
-  --max-model-len 131072 \
+  --kv-cache-dtype fp8 \
+  --max-model-len 32768 \
   --gpu-memory-utilization 0.9 \
   --enable-expert-parallel \
   --port ${PORT} \
