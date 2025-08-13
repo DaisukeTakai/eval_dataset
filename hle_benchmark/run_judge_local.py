@@ -57,55 +57,60 @@ correct: Answer 'yes' if extracted_final_answer matches the [correct_answer] giv
 
 confidence: The extracted confidence score between 0|%| and 100|%| from [response]. Put 100 if there is no confidence score available."""
 
+
 class ExtractedAnswer(BaseModel):
     extracted_final_answer: str
     reasoning: str
     correct: Literal["yes", "no"]
     confidence: int
-    strict: Literal[True] # 100% reliability
+    strict: Literal[True]  # 100% reliability
 
 
 async def extract_answer(args, client, question, correct_answer, response):
-    prompt = JUDGE_PROMPT.format(question=question, correct_answer=correct_answer, response=response)
+    prompt = JUDGE_PROMPT.format(
+        question=question, correct_answer=correct_answer, response=response
+    )
     try:
         response = await client.beta.chat.completions.parse(
-                model=args.judge,
-                max_completion_tokens=4096, # overkill for judge
-                messages=[
-                    {"role": "user", "content": prompt}
-                ],
-                response_format=ExtractedAnswer,
-            )
+            model=args.judge,
+            max_completion_tokens=4096,  # overkill for judge
+            messages=[{"role": "user", "content": prompt}],
+            response_format=ExtractedAnswer,
+        )
         content = response.choices[0].message.parsed
         return {
             "correct_answer": correct_answer,
             "model_answer": content.extracted_final_answer,
             "reasoning": content.reasoning,
             "correct": content.correct,
-            "confidence": content.confidence
+            "confidence": content.confidence,
         }
-    except Exception as e: # very, very rare
+    except Exception as e:  # very, very rare
         print("Error:", e)
         return None
 
+
 async def add_judge_response(args, client, question, predictions):
     unique_id = question.get("id")
-    prediction = copy.deepcopy(predictions[unique_id]) # not in-place
-    question_text = question.get("question") or question.get('solution')
+    prediction = copy.deepcopy(predictions[unique_id])  # not in-place
+    question_text = question.get("question") or question.get("solution")
 
     correct_answer = question.get("answer")
 
-    if "judge_response" in prediction: # already judged
+    if "judge_response" in prediction:  # already judged
         return unique_id, prediction
 
     response = prediction["response"]
-    content = await extract_answer(args, client, question_text, correct_answer, response)
+    content = await extract_answer(
+        args, client, question_text, correct_answer, response
+    )
 
     if content is not None:
-        prediction["judge_response"] = content # local in-place
+        prediction["judge_response"] = content  # local in-place
         return unique_id, prediction
     else:
         return None, None
+
 
 async def judge_all_responses(args, client, questions, predictions):
     async def bound_func(question):
@@ -119,8 +124,9 @@ async def judge_all_responses(args, client, questions, predictions):
         results = await tqdm_asyncio.gather(*tasks)
     return results
 
+
 # source: https://github.com/hendrycks/outlier-exposure/blob/master/utils/calibration_tools.py
-def calib_err(confidence, correct, p='2', beta=100):
+def calib_err(confidence, correct, p="2", beta=100):
     if len(confidence) < beta:
         return 0.0
     # beta is target bin size
@@ -133,26 +139,27 @@ def calib_err(confidence, correct, p='2', beta=100):
     cerr = 0
     total_examples = len(confidence)
     for i in range(len(bins) - 1):
-        bin_confidence = confidence[bins[i][0]:bins[i][1]]
-        bin_correct = correct[bins[i][0]:bins[i][1]]
+        bin_confidence = confidence[bins[i][0] : bins[i][1]]
+        bin_correct = correct[bins[i][0] : bins[i][1]]
         num_examples_in_bin = len(bin_confidence)
 
         if num_examples_in_bin > 0:
             difference = np.abs(np.nanmean(bin_confidence) - np.nanmean(bin_correct))
 
-            if p == '2':
+            if p == "2":
                 cerr += num_examples_in_bin / total_examples * np.square(difference)
-            elif p == '1':
+            elif p == "1":
                 cerr += num_examples_in_bin / total_examples * difference
-            elif p == 'infty' or p == 'infinity' or p == 'max':
+            elif p == "infty" or p == "infinity" or p == "max":
                 cerr = np.maximum(cerr, difference)
             else:
                 assert False, "p must be '1', '2', or 'infty'"
 
-    if p == '2':
+    if p == "2":
         cerr = np.sqrt(cerr)
 
     return cerr
+
 
 def dump_metrics(args, predictions, total_questions, all_questions):
     correct = []
@@ -178,7 +185,9 @@ def dump_metrics(args, predictions, total_questions, all_questions):
             judge_response = v["judge_response"]
             correct.append("yes" in judge_response["correct"])
             confidence.append(judge_response["confidence"])
-            correct_by_category[data.get("category")].append("yes" in judge_response["correct"])
+            correct_by_category[data.get("category")].append(
+                "yes" in judge_response["correct"]
+            )
         else:
             print(f"Missing judge response for {k}, you should rerun the judge")
 
@@ -188,45 +197,50 @@ def dump_metrics(args, predictions, total_questions, all_questions):
 
     # sometimes model collapses on same questions
     if len(correct) != total_questions:
-        print(f"Available predictions: {len(correct)} | Total questions: {total_questions}")
-
+        print(
+            f"Available predictions: {len(correct)} | Total questions: {total_questions}"
+        )
 
     accuracy = round(100 * sum(correct) / n, 2)
     # Wald estimator, 95% confidence interval
     confidence_half_width = round(1.96 * math.sqrt(accuracy * (100 - accuracy) / n), 2)
-    calibration_error = 100 * round(calib_err(confidence, correct, p='2', beta=100), 2)
+    calibration_error = 100 * round(calib_err(confidence, correct, p="2", beta=100), 2)
 
     print("*** Metrics ***")
     print(f"Accuracy: {accuracy}% +/- {confidence_half_width}% | n = {n}")
     print(f"Calibration Error: {calibration_error}")
 
     results = []
-    for k,v in predictions.items():
+    for k, v in predictions.items():
         data = next(filter(lambda x: x["id"] == k, all_questions))
-        results.append({
-            "id": k,
-            "category": data.get("category"),
-            "question": data.get("question") or data.get('solution'),
-            "user_prompt": "", # TODO
-            "answer_type": data.get("answer_type"),
-            "prediction": v["judge_response"]["model_answer"],
-            "gold": v["judge_response"]["correct_answer"],
-            "correct": 1 if v["judge_response"]["correct"] == "yes" else 0,
-            "judgement": v["judge_response"]["reasoning"],
-        })
+        results.append(
+            {
+                "id": k,
+                "category": data.get("category"),
+                "question": data.get("question") or data.get("solution"),
+                "user_prompt": "",  # TODO
+                "answer_type": data.get("answer_type"),
+                "prediction": v["judge_response"]["model_answer"],
+                "gold": v["judge_response"]["correct_answer"],
+                "correct": 1 if v["judge_response"]["correct"] == "yes" else 0,
+                "judgement": v["judge_response"]["reasoning"],
+            }
+        )
 
     summary = {
         "model_name": predictions[k]["model"],
         "overall_accuracy": accuracy,
         "accuracy_per_category": {
-            category: sum(correct_list) / len(correct_list) * 100 if correct_list else None
+            category: (
+                sum(correct_list) / len(correct_list) * 100 if correct_list else None
+            )
             for category, correct_list in correct_by_category.items()
         },
         "num_questions": n,
         "timestamp": datetime.now().isoformat(),
     }
 
-    output_folder_name = "leaderboard/" +datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+    output_folder_name = "leaderboard/" + datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
     os.makedirs(output_folder_name, exist_ok=True)
     with open(output_folder_name + "/results.jsonl", "w") as f:
         f.writelines([json.dumps(l) + "\n" for l in results])
@@ -237,8 +251,8 @@ def dump_metrics(args, predictions, total_questions, all_questions):
 def main(args):
     client = AsyncOpenAI(
         base_url=args.base_url,
-        timeout=300.0,
-        max_retries=1,
+        timeout=86400,
+        max_retries=3,
         api_key=os.environ.get("OPENAI_API_KEY"),
     )
 
@@ -247,9 +261,11 @@ def main(args):
     dataset_name = os.path.basename(args.dataset)
     dataset_name = re.sub(r"[^\w\-]", "_", dataset_name)
 
-    output_filepath = f"judged/judged_{dataset_name}_{os.path.basename(args.model)}.json"
+    output_filepath = (
+        f"judged/judged_{dataset_name}_{os.path.basename(args.model)}.json"
+    )
 
-    #dataset = load_dataset(args.dataset, split="test")
+    # dataset = load_dataset(args.dataset, split="test")
     dd = standardize_dataset(args)
     print(dd.keys())
     dataset = dd[list(dd.keys())[0]]
@@ -265,11 +281,15 @@ def main(args):
     dataset = dataset.to_dict()
 
     # convert to list of json for async parallelism
-    all_questions = [dict(zip(dataset.keys(), values)) for values in zip(*dataset.values())]
+    all_questions = [
+        dict(zip(dataset.keys(), values)) for values in zip(*dataset.values())
+    ]
 
     total_questions = len(all_questions)
 
-    with open(f"predictions/{dataset_name}_{os.path.basename(args.model)}.json", "r") as f:
+    with open(
+        f"predictions/{dataset_name}_{os.path.basename(args.model)}.json", "r"
+    ) as f:
         predictions = json.load(f)
 
     # load only unjudged responses
@@ -279,15 +299,26 @@ def main(args):
     else:
         judged_predictions = {}
 
-    questions = [q for q in all_questions if q.get("id") in predictions and q.get("id") not in judged_predictions]
+    questions = [
+        q
+        for q in all_questions
+        if q.get("id") in predictions and q.get("id") not in judged_predictions
+    ]
 
     # all_questions の最初の 5 件の id と型を出力
-    print("all_questions sample IDs:", [(q.get("id"), type(q.get("id"))) for q in all_questions[:5]])
+    print(
+        "all_questions sample IDs:",
+        [(q.get("id"), type(q.get("id"))) for q in all_questions[:5]],
+    )
     # predictions のキーのサンプルと型
-    print("predictions sample keys:", [(k, type(k)) for k in list(predictions.keys())[:5]])
-    print(f"[DEBUG] 判定対象 questions: {len(questions)} 件 / 全 questions: {total_questions} 件")
+    print(
+        "predictions sample keys:", [(k, type(k)) for k in list(predictions.keys())[:5]]
+    )
+    print(
+        f"[DEBUG] 判定対象 questions: {len(questions)} 件 / 全 questions: {total_questions} 件"
+    )
 
-     # API will only be called for unjudged responses
+    # API will only be called for unjudged responses
     results = asyncio.run(judge_all_responses(args, client, questions, predictions))
 
     for unique_id, predictions in results:

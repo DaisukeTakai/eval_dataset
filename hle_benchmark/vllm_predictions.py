@@ -133,7 +133,9 @@ def main(args: Config):
 
     dataset_name = os.path.basename(args.dataset)
     dataset_name = re.sub(r"[^\w\-]", "_", dataset_name)
-    output_filepath = f"predictions/{dataset_name}_{os.path.basename(args.model)}.json"
+    output_filepath = (
+        f"predictions/{dataset_name}_{os.path.basename(args.model)}_02.json"
+    )
 
     # load only questions without responses
     if os.path.exists(output_filepath):

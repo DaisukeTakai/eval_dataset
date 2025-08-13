@@ -1,9 +1,9 @@
-dataset: toloka/u-math # KbsdJames/Omni-MATH
+dataset: KbsdJames/Omni-MATH
 
-id_col: uuid
-question_col: problem_statement
-answer_col: golden_answer
-thinking_col: null
+id_col: null
+question_col: problem
+answer_col: answer
+thinking_col: solution
 
 provider: vllm
 
@@ -21,4 +21,4 @@ num_workers: 2400
 # 全件やりたいときはnull
 max_samples: null
 
-judge: /home/Competition2025/P12/shareP12/models/Qwen3-235B-A22B-FP8/
+judge: /home/Competition2025/P12/shareP12/models/Qwen3-235B-A22B-FP8

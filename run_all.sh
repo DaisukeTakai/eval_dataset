@@ -1,9 +1,9 @@
 #!/bin/bash
-#SBATCH --job-name=predict
+#SBATCH --job-name=predict_judge
 #SBATCH --partition=P12
 #SBATCH --nodes=1
 #SBATCH --gpus-per-node=8
-#SBATCH --cpus-per-task=40
+#SBATCH --cpus-per-task=128
 #SBATCH --time=24:00:00
 #SBATCH --output=/home/Competition2025/P12/%u/slurm_logs/%x-%j.out
 #SBATCH --error=/home/Competition2025/P12/%u/slurm_logs/%x-%j.err
@@ -42,7 +42,7 @@ mkdir -p "$HF_HOME"
 echo "HF cache dir : $HF_HOME"
 
 #--- GPU 準備 監視 ------------------------------------------------
-export CUDA_VISIBLE_DEVICES=$(seq -s, 0 $((GPU_NUM-1)))
+#export CUDA_VISIBLE_DEVICES=$(seq -s, 0 $((GPU_NUM-1)))
 
 ulimit -v unlimited
 ulimit -m unlimited
@@ -51,11 +51,11 @@ nvidia-smi -l 3 > nvidia-smi.log &
 pid_nvsmi=$!
 
 #--- 必要なディレクトリを作成 -------------------------------------
-cd ${SLURM_TMPDIR:-$HOME}/llm_bridge_prod/eval_dataset
+cd "$HOME/llm_bridge_prod/eval_dataset"
 mkdir -p predictions
-#mkdir -p judged
+mkdir -p judged
 
-#--- vLLM 起動（8GPU）---------------------------------------------
+#--- vLLM 起動（推論用）---------------------------------------------
 # --rope-scaling '{"rope_type":"yarn","factor":2.0,"original_max_position_embeddings":32768}' \
 vllm serve /home/Competition2025/P12/shareP12/models/Qwen3-32B-FP8 \
   --tensor-parallel-size $GPU_NUM \
@@ -64,7 +64,7 @@ vllm serve /home/Competition2025/P12/shareP12/models/Qwen3-32B-FP8 \
   --max-model-len 32768 \
   --gpu-memory-utilization 0.9 \
   --port $PORT \
-  > vllm.log 2>&1 &
+  > vllm_predict.log 2>&1 &
 pid_vllm=$!
 
 #--- ヘルスチェック -----------------------------------------------
@@ -82,17 +82,62 @@ echo "$models"
 
 # hydra-core対策
 export PYTHONPATH=$HOME/.conda/envs/llmbench/lib/python3.12/site-packages:$PYTHONPATH
-echo "$LD_LIBRARY_PATH"
 
 #--- 推論 ---------------------------------------------------------
 python predict.py #> predict.log 2>&1
+kill $pid_vllm
+log INFO "推論終了"
 
-#--- 評価 ---------------------------------------------------------
-# python judge.py > judge.log 2>&1
-log INFO "JOB正常終了"
+#--- 評価準備 -----------------------------------------------------
+PORT2=$((PORT+1))
+
+#--- vLLM 起動（評価用）--------------------------------------------
+# MoEモデルの実行には--enable-expert-parallelが必要ぽい
+# export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+vllm serve /home/Competition2025/P12/shareP12/models/Qwen3-235B-A22B-FP8/ \
+  --tensor-parallel-size $GPU_NUM \
+  --reasoning-parser deepseek_r1 \
+  --kv-cache-dtype fp8 \
+  --max-model-len 32768 \
+  --gpu-memory-utilization 0.9 \
+  --enable-expert-parallel \
+  --port ${PORT2} \
+  > vllm_judge.log 2>&1 &
+pid_vllm=$!
+
+#--- ヘルスチェック -------------------------------------------------
+until curl -s http://127.0.0.1:${PORT2}/health >/dev/null; do
+  echo "$(date +%T) vLLM starting …"
+  sleep 10
+done
+echo "$(date +%T) vLLM READY"
+
+# モデル一覧を取得して確認
+models=$(curl -s http://localhost:${PORT2}/v1/models)
+echo "$models"
+
+#--- 評価 -----------------------------------------------------------
+export OPENAI_API_KEY="fakeapikey"
+python judge_local.py #> judge.log 2>&1
+log INFO "評価終了"
+
+#--- ファイルをcopyして整理 -----------------------------------------
+# 現在の日時のdirectoryを作成
+timestamp=$(date +%Y%m%d_%H%M%S)
+filename="Omni-MATH_Qwen3-32B-FP8"
+
+mkdir -p "$HOME/llm_bridge_prod/eval_dataset/predictions/$timestamp"
+mkdir -p "$HOME/llm_bridge_prod/eval_dataset/judged/$timestamp"
+
+cp "$HOME/llm_bridge_prod/eval_dataset/predictions/$filename.json" \
+   "$HOME/llm_bridge_prod/eval_dataset/predictions/$timestamp/$filename.json"
+
+cp "$HOME/llm_bridge_prod/eval_dataset/judged/$filename.json" \
+   "$HOME/llm_bridge_prod/eval_dataset/judged/$timestamp/$filename.json"
 
 #--- 次のsbatchのためにscancel_hatakeyama --------------------------
 bash /home/Competition2025/P12/shareP12/scancel_hatakeyama.sh "${SLURMD_NODENAME#*-}"
+log INFO "JOB正常終了"
 
 #--- 後片付け -----------------------------------------------------
 kill $pid_vllm
