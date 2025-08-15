@@ -1,9 +1,9 @@
 dataset: suzakuteam/omni_math_1000
 
-id_col: null
+id_col: id
 question_col: problem
 answer_col: answer
-thinking_col: solution
+thinking_col: thinking
 
 provider: vllm
 
@@ -21,4 +21,4 @@ num_workers: 2400
 # 全件やりたいときはnull
 max_samples: null
 
-judge: /home/Competition2025/P12/shareP12/models/Qwen3-235B-A22B-FP8/
+judge: /home/Competition2025/P12/shareP12/models/Qwen3-235B-A22B-FP8

@@ -1,0 +1,37 @@
+2025-08-15 14:48:59 [INFO] Initial backup saved to /home/Competition2025/P12/P12U017/llm_bridge_prod/eval_dataset/conf_queue/finished/initial_backup_20250815_144859/config.yaml
+2025-08-15 14:48:59 [INFO] Found 6 YAML(s): 01.yaml 02.yaml 03.yaml 04.yaml 05.yaml 06.yaml
+対象ノード: osk-gpu86
+ジョブ一覧を取得中...
+対象ノード (osk-gpu86) にジョブが見つかりません
+Submitted batch job 364681
+2025-08-15 14:49:41 [INFO] Cron job was finished.
+対象ノード: osk-gpu86
+ジョブ一覧を取得中...
+ジョブID 364693 をキャンセル中...
+★ Cancel request queued for JobID: 364693
+  Waiting for administrator response...
+✓ Done. Request for canceling job 364693 has been processed.
+Submitted batch job 364698
+2025-08-15 14:50:24 [INFO] Cron job was finished.
+対象ノード: osk-gpu86
+ジョブ一覧を取得中...
+対象ノード (osk-gpu86) にジョブが見つかりません
+Submitted batch job 364704
+2025-08-15 14:51:07 [INFO] Cron job was finished.
+対象ノード: osk-gpu86
+ジョブ一覧を取得中...
+対象ノード (osk-gpu86) にジョブが見つかりません
+Submitted batch job 364710
+2025-08-15 14:51:49 [INFO] Cron job was finished.
+対象ノード: osk-gpu86
+ジョブ一覧を取得中...
+対象ノード (osk-gpu86) にジョブが見つかりません
+Submitted batch job 364716
+2025-08-15 14:52:31 [INFO] Cron job was finished.
+対象ノード: osk-gpu86
+ジョブ一覧を取得中...
+対象ノード (osk-gpu86) にジョブが見つかりません
+Submitted batch job 364723
+2025-08-15 14:53:13 [INFO] Cron job was finished.
+2025-08-15 14:53:23 [INFO] Found 0 YAML(s): 
+2025-08-15 14:53:23 [INFO] No YAML found in /home/Competition2025/P12/P12U017/llm_bridge_prod/eval_dataset/conf_queue/waiting.

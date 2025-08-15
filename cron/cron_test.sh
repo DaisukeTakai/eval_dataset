@@ -4,8 +4,8 @@
 #SBATCH --nodes=1
 #SBATCH --gpus-per-node=0
 #SBATCH --cpus-per-task=1
-#SBATCH --output=/home/Competition2025/P12/%u/%x.out
+#SBATCH --output=/home/Competition2025/P12/%u/llm_bridge_prod/eval_dataset/cron/%x.out
 
 echo "[INFO] cron_test.sh started at $(date '+%F %T')"
-sleep 15
+sleep 10
 echo "[INFO] cron_test.sh finished at $(date '+%F %T')"

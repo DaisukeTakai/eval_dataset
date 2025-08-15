@@ -1,10 +1,17 @@
-[INFO] cron.sh started at 2025-08-15 14:38:58
+[INFO] cron.sh started at 2025-08-15 14:52:31
 [INFO] 現在のhatakeyamaジョブ数: 0 / PENDINGジョブ数: 0
-Submitted batch job 364657
-Submitted batch job 364658
-Submitted batch job 364659
+Submitted batch job 364724
+Submitted batch job 364725
+Submitted batch job 364726
 対象ノード: osk-gpu84,osk-gpu85,osk-gpu86
 ジョブ一覧を取得中...
 対象ノード (osk-gpu84,osk-gpu85,osk-gpu86) にジョブが見つかりません
-[INFO] 2025-08-15 14:38:58 投入: 3件 / 累積: 3件
-slurmstepd: error: *** JOB 364656 ON osk-gpu86 CANCELLED AT 2025-08-15T14:39:16 ***
+[INFO] 2025-08-15 14:52:31 投入: 3件 / 累積: 3件
+[INFO] 現在のhatakeyamaジョブ数: 0 / PENDINGジョブ数: 0
+Submitted batch job 364727
+Submitted batch job 364728
+対象ノード: osk-gpu84,osk-gpu85,osk-gpu86
+ジョブ一覧を取得中...
+対象ノード (osk-gpu84,osk-gpu85,osk-gpu86) にジョブが見つかりません
+[INFO] 2025-08-15 14:53:01 投入: 2件 / 累積: 5件
+[INFO] 累積投入回数 5件 に達したため終了します。

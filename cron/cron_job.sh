@@ -12,7 +12,7 @@ echo "[INFO] cron.sh started at $(date '+%F %T')"
 # === 各自の設定項目 ===
 MAX_SUBMIT=5   # ★ ここで上限を設定
 MY_JOB_PATH="/home/Competition2025/P12/$USER/llm_bridge_prod/eval_dataset/cron/cron_test.sh"
-SLEEP_SEC=30
+SLEEP_SEC=600   # job 追加の間隔設定
 
 # === 変数の設定 ===
 total_submit=0
