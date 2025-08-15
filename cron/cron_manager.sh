@@ -8,7 +8,8 @@
 #SBATCH --output=/home/Competition2025/P12/%u/llm_bridge_prod/eval_dataset/cron/%x.out
 
 # --- cron_job のパス設定 ---
-CRON_PATH="/home/Competition2025/P12/$USER/llm_bridge_prod/eval_dataset/cron/cron_job.sh"
+JOB_1="/home/Competition2025/P12/$USER/llm_bridge_prod/eval_dataset/run_predict.sh"
+JOB_2="/home/Competition2025/P12/$USER/llm_bridge_prod/eval_dataset/run_judge.sh"
 
 # --- ディレクトリ設定 ---
 WAIT_DIR="/home/Competition2025/P12/$USER/llm_bridge_prod/eval_dataset/conf_queue/waiting"
@@ -47,8 +48,11 @@ while true; do
     cp -a "$yaml" "$CONF_FILE"
 
     # cron_job 実行
-    bash /home/Competition2025/P12/shareP12/scancel_hatakeyama.sh gpu86
-    sbatch --wait "$CRON_PATH"
+    bash /home/Competition2025/P12/shareP12/scancel_hatakeyama.sh gpu84 gpu85 gpu86
+    sbatch --wait "$JOB_1"
+    sleep 30
+    bash /home/Competition2025/P12/shareP12/scancel_hatakeyama.sh gpu84 gpu85 gpu86
+    sbatch --wait "$JOB_2"
     log INFO "Cron job was finished."
 
     # 使用した YAML を FIN_DIR にアーカイブ

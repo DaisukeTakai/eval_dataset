@@ -233,3 +233,120 @@ INFO 08-16 02:03:21 [__init__.py:235] Automatically detected platform cuda.
 [1;36m(VllmWorker rank=4 pid=775162)[0;0m INFO 08-16 02:07:08 [backends.py:194] Cache the graph for dynamic shape for later use
 [1;36m(VllmWorker rank=6 pid=775164)[0;0m INFO 08-16 02:07:14 [backends.py:194] Cache the graph for dynamic shape for later use
 [1;36m(VllmWorker rank=0 pid=775158)[0;0m INFO 08-16 02:07:15 [backends.py:194] Cache the graph for dynamic shape for later use
+[1;36m(VllmWorker rank=5 pid=775163)[0;0m INFO 08-16 02:13:50 [backends.py:215] Compiling a graph for dynamic shape takes 414.61 s
+[1;36m(VllmWorker rank=1 pid=775159)[0;0m INFO 08-16 02:13:50 [backends.py:215] Compiling a graph for dynamic shape takes 414.52 s
+[1;36m(VllmWorker rank=7 pid=775165)[0;0m INFO 08-16 02:13:50 [backends.py:215] Compiling a graph for dynamic shape takes 414.52 s
+[1;36m(VllmWorker rank=6 pid=775164)[0;0m INFO 08-16 02:13:52 [backends.py:215] Compiling a graph for dynamic shape takes 409.67 s
+[1;36m(VllmWorker rank=4 pid=775162)[0;0m INFO 08-16 02:13:56 [backends.py:215] Compiling a graph for dynamic shape takes 419.83 s
+[1;36m(VllmWorker rank=2 pid=775160)[0;0m INFO 08-16 02:13:56 [backends.py:215] Compiling a graph for dynamic shape takes 419.67 s
+[1;36m(VllmWorker rank=3 pid=775161)[0;0m INFO 08-16 02:13:57 [backends.py:215] Compiling a graph for dynamic shape takes 420.89 s
+[1;36m(VllmWorker rank=0 pid=775158)[0;0m INFO 08-16 02:14:00 [backends.py:215] Compiling a graph for dynamic shape takes 417.39 s
+[1;36m(VllmWorker rank=6 pid=775164)[0;0m WARNING 08-16 02:14:05 [fused_moe.py:695] Using default MoE config. Performance might be sub-optimal! Config file not found at /home/Competition2025/P12/P12U017/.conda/envs/llmbench/lib/python3.12/site-packages/vllm/model_executor/layers/fused_moe/configs/E=16,N=1536,device_name=NVIDIA_H100_80GB_HBM3,dtype=fp8_w8a8,block_shape=[128,128].json
+[1;36m(VllmWorker rank=2 pid=775160)[0;0m WARNING 08-16 02:14:05 [fused_moe.py:695] Using default MoE config. Performance might be sub-optimal! Config file not found at /home/Competition2025/P12/P12U017/.conda/envs/llmbench/lib/python3.12/site-packages/vllm/model_executor/layers/fused_moe/configs/E=16,N=1536,device_name=NVIDIA_H100_80GB_HBM3,dtype=fp8_w8a8,block_shape=[128,128].json
+[1;36m(VllmWorker rank=4 pid=775162)[0;0m WARNING 08-16 02:14:06 [fused_moe.py:695] Using default MoE config. Performance might be sub-optimal! Config file not found at /home/Competition2025/P12/P12U017/.conda/envs/llmbench/lib/python3.12/site-packages/vllm/model_executor/layers/fused_moe/configs/E=16,N=1536,device_name=NVIDIA_H100_80GB_HBM3,dtype=fp8_w8a8,block_shape=[128,128].json
+[1;36m(VllmWorker rank=3 pid=775161)[0;0m WARNING 08-16 02:14:06 [fused_moe.py:695] Using default MoE config. Performance might be sub-optimal! Config file not found at /home/Competition2025/P12/P12U017/.conda/envs/llmbench/lib/python3.12/site-packages/vllm/model_executor/layers/fused_moe/configs/E=16,N=1536,device_name=NVIDIA_H100_80GB_HBM3,dtype=fp8_w8a8,block_shape=[128,128].json
+[1;36m(VllmWorker rank=5 pid=775163)[0;0m WARNING 08-16 02:14:06 [fused_moe.py:695] Using default MoE config. Performance might be sub-optimal! Config file not found at /home/Competition2025/P12/P12U017/.conda/envs/llmbench/lib/python3.12/site-packages/vllm/model_executor/layers/fused_moe/configs/E=16,N=1536,device_name=NVIDIA_H100_80GB_HBM3,dtype=fp8_w8a8,block_shape=[128,128].json
+[1;36m(VllmWorker rank=7 pid=775165)[0;0m WARNING 08-16 02:14:06 [fused_moe.py:695] Using default MoE config. Performance might be sub-optimal! Config file not found at /home/Competition2025/P12/P12U017/.conda/envs/llmbench/lib/python3.12/site-packages/vllm/model_executor/layers/fused_moe/configs/E=16,N=1536,device_name=NVIDIA_H100_80GB_HBM3,dtype=fp8_w8a8,block_shape=[128,128].json
+[1;36m(VllmWorker rank=1 pid=775159)[0;0m WARNING 08-16 02:14:07 [fused_moe.py:695] Using default MoE config. Performance might be sub-optimal! Config file not found at /home/Competition2025/P12/P12U017/.conda/envs/llmbench/lib/python3.12/site-packages/vllm/model_executor/layers/fused_moe/configs/E=16,N=1536,device_name=NVIDIA_H100_80GB_HBM3,dtype=fp8_w8a8,block_shape=[128,128].json
+[1;36m(VllmWorker rank=0 pid=775158)[0;0m WARNING 08-16 02:14:07 [fused_moe.py:695] Using default MoE config. Performance might be sub-optimal! Config file not found at /home/Competition2025/P12/P12U017/.conda/envs/llmbench/lib/python3.12/site-packages/vllm/model_executor/layers/fused_moe/configs/E=16,N=1536,device_name=NVIDIA_H100_80GB_HBM3,dtype=fp8_w8a8,block_shape=[128,128].json
+[1;36m(VllmWorker rank=0 pid=775158)[0;0m INFO 08-16 02:14:19 [monitor.py:34] torch.compile takes 447.22 s in total
+[1;36m(VllmWorker rank=3 pid=775161)[0;0m INFO 08-16 02:14:19 [monitor.py:34] torch.compile takes 443.58 s in total
+[1;36m(VllmWorker rank=5 pid=775163)[0;0m INFO 08-16 02:14:19 [monitor.py:34] torch.compile takes 437.30 s in total
+[1;36m(VllmWorker rank=4 pid=775162)[0;0m INFO 08-16 02:14:19 [monitor.py:34] torch.compile takes 442.53 s in total
+[1;36m(VllmWorker rank=1 pid=775159)[0;0m INFO 08-16 02:14:19 [monitor.py:34] torch.compile takes 437.24 s in total
+[1;36m(VllmWorker rank=2 pid=775160)[0;0m INFO 08-16 02:14:19 [monitor.py:34] torch.compile takes 442.48 s in total
+[1;36m(VllmWorker rank=6 pid=775164)[0;0m INFO 08-16 02:14:19 [monitor.py:34] torch.compile takes 438.71 s in total
+[1;36m(VllmWorker rank=7 pid=775165)[0;0m INFO 08-16 02:14:19 [monitor.py:34] torch.compile takes 437.27 s in total
+[1;36m(VllmWorker rank=0 pid=775158)[0;0m INFO 08-16 02:14:35 [gpu_worker.py:255] Available KV cache memory: 35.74 GiB
+[1;36m(VllmWorker rank=6 pid=775164)[0;0m INFO 08-16 02:14:35 [gpu_worker.py:255] Available KV cache memory: 35.65 GiB
+[1;36m(VllmWorker rank=4 pid=775162)[0;0m INFO 08-16 02:14:35 [gpu_worker.py:255] Available KV cache memory: 35.65 GiB
+[1;36m(VllmWorker rank=3 pid=775161)[0;0m INFO 08-16 02:14:35 [gpu_worker.py:255] Available KV cache memory: 35.65 GiB
+[1;36m(VllmWorker rank=7 pid=775165)[0;0m INFO 08-16 02:14:35 [gpu_worker.py:255] Available KV cache memory: 36.12 GiB
+[1;36m(VllmWorker rank=2 pid=775160)[0;0m INFO 08-16 02:14:35 [gpu_worker.py:255] Available KV cache memory: 35.65 GiB
+[1;36m(VllmWorker rank=1 pid=775159)[0;0m INFO 08-16 02:14:35 [gpu_worker.py:255] Available KV cache memory: 35.65 GiB
+[1;36m(VllmWorker rank=5 pid=775163)[0;0m INFO 08-16 02:14:36 [gpu_worker.py:255] Available KV cache memory: 35.65 GiB
+INFO 08-16 02:14:37 [kv_cache_utils.py:833] GPU KV cache size: 1,594,928 tokens
+INFO 08-16 02:14:37 [kv_cache_utils.py:837] Maximum concurrency for 32,768 tokens per request: 48.67x
+INFO 08-16 02:14:37 [kv_cache_utils.py:833] GPU KV cache size: 1,590,736 tokens
+INFO 08-16 02:14:37 [kv_cache_utils.py:837] Maximum concurrency for 32,768 tokens per request: 48.55x
+INFO 08-16 02:14:37 [kv_cache_utils.py:833] GPU KV cache size: 1,590,736 tokens
+INFO 08-16 02:14:37 [kv_cache_utils.py:837] Maximum concurrency for 32,768 tokens per request: 48.55x
+INFO 08-16 02:14:37 [kv_cache_utils.py:833] GPU KV cache size: 1,590,736 tokens
+INFO 08-16 02:14:37 [kv_cache_utils.py:837] Maximum concurrency for 32,768 tokens per request: 48.55x
+INFO 08-16 02:14:37 [kv_cache_utils.py:833] GPU KV cache size: 1,590,736 tokens
+INFO 08-16 02:14:37 [kv_cache_utils.py:837] Maximum concurrency for 32,768 tokens per request: 48.55x
+INFO 08-16 02:14:37 [kv_cache_utils.py:833] GPU KV cache size: 1,590,736 tokens
+INFO 08-16 02:14:37 [kv_cache_utils.py:837] Maximum concurrency for 32,768 tokens per request: 48.55x
+INFO 08-16 02:14:37 [kv_cache_utils.py:833] GPU KV cache size: 1,590,736 tokens
+INFO 08-16 02:14:37 [kv_cache_utils.py:837] Maximum concurrency for 32,768 tokens per request: 48.55x
+INFO 08-16 02:14:37 [kv_cache_utils.py:833] GPU KV cache size: 1,611,664 tokens
+INFO 08-16 02:14:37 [kv_cache_utils.py:837] Maximum concurrency for 32,768 tokens per request: 49.18x
+[1;36m(VllmWorker rank=0 pid=775158)[0;0m Capturing CUDA graph shapes:   0%|          | 0/67 [00:00<?, ?it/s]Capturing CUDA graph shapes:   1%|▏         | 1/67 [00:03<04:03,  3.69s/it]Capturing CUDA graph shapes:   3%|▎         | 2/67 [00:06<03:20,  3.09s/it]Capturing CUDA graph shapes:   4%|▍         | 3/67 [00:08<02:57,  2.77s/it]Capturing CUDA graph shapes:   6%|▌         | 4/67 [00:11<02:59,  2.85s/it]Capturing CUDA graph shapes:   7%|▋         | 5/67 [00:13<02:32,  2.46s/it]Capturing CUDA graph shapes:   9%|▉         | 6/67 [00:16<02:48,  2.76s/it]Capturing CUDA graph shapes:  10%|█         | 7/67 [00:19<02:38,  2.63s/it]Capturing CUDA graph shapes:  12%|█▏        | 8/67 [00:22<02:46,  2.82s/it]Capturing CUDA graph shapes:  13%|█▎        | 9/67 [00:24<02:23,  2.48s/it]Capturing CUDA graph shapes:  15%|█▍        | 10/67 [00:27<02:39,  2.79s/it]Capturing CUDA graph shapes:  16%|█▋        | 11/67 [00:31<02:49,  3.02s/it]Capturing CUDA graph shapes:  18%|█▊        | 12/67 [00:33<02:36,  2.85s/it]Capturing CUDA graph shapes:  19%|█▉        | 13/67 [00:36<02:34,  2.86s/it]Capturing CUDA graph shapes:  21%|██        | 14/67 [00:38<02:23,  2.71s/it]Capturing CUDA graph shapes:  22%|██▏       | 15/67 [00:41<02:24,  2.77s/it]Capturing CUDA graph shapes:  24%|██▍       | 16/67 [00:44<02:16,  2.67s/it]Capturing CUDA graph shapes:  25%|██▌       | 17/67 [00:47<02:25,  2.91s/it]Capturing CUDA graph shapes:  27%|██▋       | 18/67 [00:50<02:14,  2.75s/it]Capturing CUDA graph shapes:  28%|██▊       | 19/67 [00:52<02:07,  2.65s/it]Capturing CUDA graph shapes:  30%|██▉       | 20/67 [00:55<02:12,  2.81s/it]Capturing CUDA graph shapes:  31%|███▏      | 21/67 [00:58<02:07,  2.76s/it]Capturing CUDA graph shapes:  33%|███▎      | 22/67 [01:01<02:07,  2.83s/it]Capturing CUDA graph shapes:  34%|███▍      | 23/67 [01:03<01:57,  2.67s/it]Capturing CUDA graph shapes:  36%|███▌      | 24/67 [01:06<01:53,  2.63s/it]Capturing CUDA graph shapes:  37%|███▋      | 25/67 [01:08<01:52,  2.68s/it]Capturing CUDA graph shapes:  39%|███▉      | 26/67 [01:12<02:01,  2.96s/it]Capturing CUDA graph shapes:  40%|████      | 27/67 [01:15<02:02,  3.05s/it]Capturing CUDA graph shapes:  42%|████▏     | 28/67 [01:18<02:00,  3.08s/it]Capturing CUDA graph shapes:  43%|████▎     | 29/67 [01:21<01:49,  2.87s/it]Capturing CUDA graph shapes:  45%|████▍     | 30/67 [01:24<01:47,  2.90s/it]Capturing CUDA graph shapes:  46%|████▋     | 31/67 [01:26<01:40,  2.79s/it]Capturing CUDA graph shapes:  48%|████▊     | 32/67 [01:29<01:41,  2.89s/it]Capturing CUDA graph shapes:  49%|████▉     | 33/67 [01:31<01:28,  2.61s/it]Capturing CUDA graph shapes:  51%|█████     | 34/67 [01:35<01:38,  2.98s/it]Capturing CUDA graph shapes:  52%|█████▏    | 35/67 [01:37<01:24,  2.66s/it]Capturing CUDA graph shapes:  54%|█████▎    | 36/67 [01:40<01:19,  2.55s/it]Capturing CUDA graph shapes:  55%|█████▌    | 37/67 [01:43<01:23,  2.78s/it]Capturing CUDA graph shapes:  57%|█████▋    | 38/67 [01:45<01:14,  2.56s/it]Capturing CUDA graph shapes:  58%|█████▊    | 39/67 [01:48<01:14,  2.68s/it]Capturing CUDA graph shapes:  60%|█████▉    | 40/67 [01:50<01:08,  2.55s/it]Capturing CUDA graph shapes:  61%|██████    | 41/67 [01:53<01:06,  2.55s/it]Capturing CUDA graph shapes:  63%|██████▎   | 42/67 [01:55<01:05,  2.62s/it]Capturing CUDA graph shapes:  64%|██████▍   | 43/67 [01:58<01:02,  2.62s/it]Capturing CUDA graph shapes:  66%|██████▌   | 44/67 [02:01<01:01,  2.69s/it]Capturing CUDA graph shapes:  67%|██████▋   | 45/67 [02:03<00:57,  2.62s/it]Capturing CUDA graph shapes:  69%|██████▊   | 46/67 [02:06<00:53,  2.55s/it]Capturing CUDA graph shapes:  70%|███████   | 47/67 [02:08<00:50,  2.51s/it]Capturing CUDA graph shapes:  72%|███████▏  | 48/67 [02:11<00:50,  2.65s/it]Capturing CUDA graph shapes:  73%|███████▎  | 49/67 [02:14<00:49,  2.77s/it]Capturing CUDA graph shapes:  75%|███████▍  | 50/67 [02:17<00:44,  2.65s/it]Capturing CUDA graph shapes:  76%|███████▌  | 51/67 [02:19<00:40,  2.56s/it]Capturing CUDA graph shapes:  78%|███████▊  | 52/67 [02:22<00:42,  2.84s/it]Capturing CUDA graph shapes:  79%|███████▉  | 53/67 [02:25<00:38,  2.74s/it]Capturing CUDA graph shapes:  81%|████████  | 54/67 [02:27<00:33,  2.59s/it]Capturing CUDA graph shapes:  82%|████████▏ | 55/67 [02:30<00:31,  2.60s/it]Capturing CUDA graph shapes:  84%|████████▎ | 56/67 [02:32<00:27,  2.50s/it]Capturing CUDA graph shapes:  85%|████████▌ | 57/67 [02:35<00:26,  2.68s/it]Capturing CUDA graph shapes:  87%|████████▋ | 58/67 [02:38<00:24,  2.75s/it]Capturing CUDA graph shapes:  88%|████████▊ | 59/67 [02:41<00:21,  2.69s/it]Capturing CUDA graph shapes:  90%|████████▉ | 60/67 [02:44<00:19,  2.78s/it]Capturing CUDA graph shapes:  91%|█████████ | 61/67 [02:45<00:15,  2.52s/it]Capturing CUDA graph shapes:  93%|█████████▎| 62/67 [02:48<00:13,  2.63s/it]Capturing CUDA graph shapes:  94%|█████████▍| 63/67 [02:51<00:10,  2.69s/it]Capturing CUDA graph shapes:  96%|█████████▌| 64/67 [02:53<00:07,  2.52s/it]Capturing CUDA graph shapes:  97%|█████████▋| 65/67 [02:55<00:04,  2.28s/it]Capturing CUDA graph shapes:  99%|█████████▊| 66/67 [02:58<00:02,  2.48s/it][1;36m(VllmWorker rank=1 pid=775159)[0;0m INFO 08-16 02:17:43 [custom_all_reduce.py:196] Registering 12663 cuda graph addresses
+Capturing CUDA graph shapes: 100%|██████████| 67/67 [03:02<00:00,  2.83s/it]Capturing CUDA graph shapes: 100%|██████████| 67/67 [03:02<00:00,  2.72s/it]
+[1;36m(VllmWorker rank=7 pid=775165)[0;0m INFO 08-16 02:17:44 [custom_all_reduce.py:196] Registering 12663 cuda graph addresses
+[1;36m(VllmWorker rank=6 pid=775164)[0;0m INFO 08-16 02:17:44 [custom_all_reduce.py:196] Registering 12663 cuda graph addresses
+[1;36m(VllmWorker rank=0 pid=775158)[0;0m INFO 08-16 02:17:44 [custom_all_reduce.py:196] Registering 12663 cuda graph addresses
+[1;36m(VllmWorker rank=4 pid=775162)[0;0m INFO 08-16 02:17:44 [custom_all_reduce.py:196] Registering 12663 cuda graph addresses
+[1;36m(VllmWorker rank=3 pid=775161)[0;0m INFO 08-16 02:17:47 [custom_all_reduce.py:196] Registering 12663 cuda graph addresses
+[1;36m(VllmWorker rank=2 pid=775160)[0;0m INFO 08-16 02:17:47 [custom_all_reduce.py:196] Registering 12663 cuda graph addresses
+[1;36m(VllmWorker rank=5 pid=775163)[0;0m INFO 08-16 02:17:48 [custom_all_reduce.py:196] Registering 12663 cuda graph addresses
+[1;36m(VllmWorker rank=5 pid=775163)[0;0m INFO 08-16 02:17:50 [gpu_model_runner.py:2485] Graph capturing finished in 189 secs, took 2.60 GiB
+[1;36m(VllmWorker rank=3 pid=775161)[0;0m INFO 08-16 02:17:50 [gpu_model_runner.py:2485] Graph capturing finished in 189 secs, took 2.60 GiB
+[1;36m(VllmWorker rank=1 pid=775159)[0;0m INFO 08-16 02:17:50 [gpu_model_runner.py:2485] Graph capturing finished in 189 secs, took 2.60 GiB
+[1;36m(VllmWorker rank=2 pid=775160)[0;0m INFO 08-16 02:17:50 [gpu_model_runner.py:2485] Graph capturing finished in 189 secs, took 2.60 GiB
+[1;36m(VllmWorker rank=7 pid=775165)[0;0m INFO 08-16 02:17:50 [gpu_model_runner.py:2485] Graph capturing finished in 190 secs, took 2.60 GiB
+[1;36m(VllmWorker rank=6 pid=775164)[0;0m INFO 08-16 02:17:50 [gpu_model_runner.py:2485] Graph capturing finished in 190 secs, took 2.60 GiB
+[1;36m(VllmWorker rank=0 pid=775158)[0;0m INFO 08-16 02:17:50 [gpu_model_runner.py:2485] Graph capturing finished in 190 secs, took 2.60 GiB
+[1;36m(VllmWorker rank=4 pid=775162)[0;0m INFO 08-16 02:17:50 [gpu_model_runner.py:2485] Graph capturing finished in 190 secs, took 2.60 GiB
+INFO 08-16 02:17:53 [core.py:193] init engine (profile, create kv cache, warmup model) took 682.07 seconds
+INFO 08-16 02:17:54 [loggers.py:141] Engine 000: vllm cache_config_info with initialization after num_gpu_blocks is: 99421
+WARNING 08-16 02:17:54 [config.py:1528] Default sampling parameters have been overridden by the model's Hugging Face generation config recommended from the model creator. If this is not intended, please relaunch vLLM instance with `--generation-config vllm`.
+INFO 08-16 02:17:54 [serving_responses.py:89] Using default chat sampling params from model: {'temperature': 0.6, 'top_k': 20, 'top_p': 0.95}
+INFO 08-16 02:17:54 [serving_chat.py:122] Using default chat sampling params from model: {'temperature': 0.6, 'top_k': 20, 'top_p': 0.95}
+INFO 08-16 02:17:54 [serving_completion.py:77] Using default completion sampling params from model: {'temperature': 0.6, 'top_k': 20, 'top_p': 0.95}
+INFO 08-16 02:17:54 [api_server.py:1818] Starting vLLM API server 0 on http://0.0.0.0:8011
+INFO 08-16 02:17:54 [launcher.py:29] Available routes are:
+INFO 08-16 02:17:54 [launcher.py:37] Route: /openapi.json, Methods: HEAD, GET
+INFO 08-16 02:17:54 [launcher.py:37] Route: /docs, Methods: HEAD, GET
+INFO 08-16 02:17:54 [launcher.py:37] Route: /docs/oauth2-redirect, Methods: HEAD, GET
+INFO 08-16 02:17:54 [launcher.py:37] Route: /redoc, Methods: HEAD, GET
+INFO 08-16 02:17:54 [launcher.py:37] Route: /health, Methods: GET
+INFO 08-16 02:17:54 [launcher.py:37] Route: /load, Methods: GET
+INFO 08-16 02:17:54 [launcher.py:37] Route: /ping, Methods: POST
+INFO 08-16 02:17:54 [launcher.py:37] Route: /ping, Methods: GET
+INFO 08-16 02:17:54 [launcher.py:37] Route: /tokenize, Methods: POST
+INFO 08-16 02:17:54 [launcher.py:37] Route: /detokenize, Methods: POST
+INFO 08-16 02:17:54 [launcher.py:37] Route: /v1/models, Methods: GET
+INFO 08-16 02:17:54 [launcher.py:37] Route: /version, Methods: GET
+INFO 08-16 02:17:54 [launcher.py:37] Route: /v1/responses, Methods: POST
+INFO 08-16 02:17:54 [launcher.py:37] Route: /v1/responses/{response_id}, Methods: GET
+INFO 08-16 02:17:54 [launcher.py:37] Route: /v1/responses/{response_id}/cancel, Methods: POST
+INFO 08-16 02:17:54 [launcher.py:37] Route: /v1/chat/completions, Methods: POST
+INFO 08-16 02:17:54 [launcher.py:37] Route: /v1/completions, Methods: POST
+INFO 08-16 02:17:54 [launcher.py:37] Route: /v1/embeddings, Methods: POST
+INFO 08-16 02:17:54 [launcher.py:37] Route: /pooling, Methods: POST
+INFO 08-16 02:17:54 [launcher.py:37] Route: /classify, Methods: POST
+INFO 08-16 02:17:54 [launcher.py:37] Route: /score, Methods: POST
+INFO 08-16 02:17:54 [launcher.py:37] Route: /v1/score, Methods: POST
+INFO 08-16 02:17:54 [launcher.py:37] Route: /v1/audio/transcriptions, Methods: POST
+INFO 08-16 02:17:54 [launcher.py:37] Route: /v1/audio/translations, Methods: POST
+INFO 08-16 02:17:54 [launcher.py:37] Route: /rerank, Methods: POST
+INFO 08-16 02:17:54 [launcher.py:37] Route: /v1/rerank, Methods: POST
+INFO 08-16 02:17:54 [launcher.py:37] Route: /v2/rerank, Methods: POST
+INFO 08-16 02:17:54 [launcher.py:37] Route: /scale_elastic_ep, Methods: POST
+INFO 08-16 02:17:54 [launcher.py:37] Route: /is_scaling_elastic_ep, Methods: POST
+INFO 08-16 02:17:54 [launcher.py:37] Route: /invocations, Methods: POST
+INFO 08-16 02:17:54 [launcher.py:37] Route: /metrics, Methods: GET
+INFO:     Started server process [774511]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     127.0.0.1:33676 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33684 - "GET /v1/models HTTP/1.1" 200 OK
+INFO 08-16 02:18:15 [launcher.py:80] Shutting down FastAPI HTTP server.
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+/home/Competition2025/P12/P12U017/.conda/envs/llmbench/lib/python3.12/multiprocessing/resource_tracker.py:254: UserWarning: resource_tracker: There appear to be 8 leaked semaphore objects to clean up at shutdown
+  warnings.warn('resource_tracker: There appear to be %d '
+/home/Competition2025/P12/P12U017/.conda/envs/llmbench/lib/python3.12/multiprocessing/resource_tracker.py:254: UserWarning: resource_tracker: There appear to be 1 leaked shared_memory objects to clean up at shutdown
+  warnings.warn('resource_tracker: There appear to be %d '
