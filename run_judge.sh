@@ -59,7 +59,7 @@ mkdir -p judged
 # MoEモデルの実行には--enable-expert-parallelが必要ぽい
 # export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 
-vllm serve /home/Competition2025/P12/shareP12/models/Qwen3-235B-A22B-FP8/ \
+vllm serve /home/Competition2025/P12/shareP12/models/Qwen3-235B-A22B-FP8 \
   --tensor-parallel-size $GPU_NUM \
   --reasoning-parser deepseek_r1 \
   --kv-cache-dtype fp8 \

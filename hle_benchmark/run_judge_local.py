@@ -261,6 +261,22 @@ def main(args):
     dataset_name = os.path.basename(args.dataset)
     dataset_name = re.sub(r"[^\w\-]", "_", dataset_name)
 
+    # --- 20250815追加部分ここから ------------------
+    job_id = os.getenv("SLURM_JOB_ID")
+    if not job_id:
+        raise RuntimeError(
+            "SLURM_JOB_ID is not set. Are you running inside a Slurm job?"
+        )
+
+    env_path = f"/home/Competition2025/P12/shareP12/utils/envs/{job_id}/env.sh"
+    os.makedirs(os.path.dirname(env_path), exist_ok=True)
+
+    with open(env_path, "w") as f:
+        f.write(
+            f"export P12_FILENAME_TEMP={dataset_name}_{os.path.basename(args.model)}\n"
+        )
+    # --- 20250815追加部分ここまで ------------------
+
     output_filepath = (
         f"judged/judged_{dataset_name}_{os.path.basename(args.model)}.json"
     )

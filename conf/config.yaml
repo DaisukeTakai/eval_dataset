@@ -1,4 +1,4 @@
-dataset: KbsdJames/Omni-MATH
+dataset: suzakuteam/omni_math_1000
 
 id_col: null
 question_col: problem
@@ -10,7 +10,7 @@ provider: vllm
 base_url: http://localhost:8010/v1
 
 # 最後に / があるとエラーになるので注意！
-model: /home/Competition2025/P12/shareP12/models/Qwen3-32B-FP8
+model: /home/Competition2025/P12/shareP12/models/Qwen3-32B
 
 max_completion_tokens: 16384 # 32768
 reasoning: true
@@ -21,4 +21,4 @@ num_workers: 2400
 # 全件やりたいときはnull
 max_samples: null
 
-judge: /home/Competition2025/P12/shareP12/models/Qwen3-235B-A22B-FP8
+judge: /home/Competition2025/P12/shareP12/models/Qwen3-235B-A22B-FP8/
