@@ -61,7 +61,7 @@ vllm serve /home/Competition2025/P12/shareP12/models/Qwen3-32B-FP8 \
   --tensor-parallel-size $GPU_NUM \
   --reasoning-parser deepseek_r1 \
   --kv-cache-dtype fp8 \
-  --max-model-len 32768 \
+  --max-model-len 20000 \
   --gpu-memory-utilization 0.9 \
   --port $PORT \
   > vllm.log 2>&1 &

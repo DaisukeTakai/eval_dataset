@@ -2,7 +2,7 @@
 #SBATCH --job-name=judge
 #SBATCH --partition=P12
 #SBATCH --nodes=1
-#SBATCH --gpus-per-node=4
+#SBATCH --gpus-per-node=8
 #SBATCH --cpus-per-task=120
 #SBATCH --time=12:00:00
 #SBATCH --output=/home/Competition2025/P12/%u/slurm_logs/%x-%j.out
@@ -63,7 +63,7 @@ vllm serve /home/Competition2025/P12/shareP12/models/Qwen3-235B-A22B-FP8 \
   --tensor-parallel-size $GPU_NUM \
   --reasoning-parser deepseek_r1 \
   --kv-cache-dtype fp8 \
-  --max-model-len 32768 \
+  --max-model-len 20000 \
   --gpu-memory-utilization 0.9 \
   --enable-expert-parallel \
   --port ${PORT} \
@@ -91,6 +91,22 @@ export PYTHONPATH=$HOME/.conda/envs/llmbench/lib/python3.12/site-packages:$PYTHO
 export OPENAI_API_KEY="fakeapikey"
 python judge_local.py #> judge.log 2>&1
 log INFO "JOB正常終了"
+
+#--- ファイルをcopyして整理 -----------------------------------------
+# 現在の日時のdirectoryを作成
+timestamp=$(date +%Y%m%d_%H%M%S)
+
+source /home/Competition2025/P12/shareP12/utils/envs/${SLURM_JOB_ID}/env.sh
+LOG INFO "FILENAME: $P12_FILENAME_TEMP"
+
+mkdir -p "$HOME/llm_bridge_prod/eval_dataset/predictions/$P12_FILENAME_TEMP/$timestamp"
+mkdir -p "$HOME/llm_bridge_prod/eval_dataset/judged/$P12_FILENAME_TEMP/$timestamp"
+
+cp "$HOME/llm_bridge_prod/eval_dataset/predictions/$P12_FILENAME_TEMP.json" \
+   "$HOME/llm_bridge_prod/eval_dataset/predictions/$P12_FILENAME_TEMP/$timestamp/$P12_FILENAME_TEMP.json"
+
+cp "$HOME/llm_bridge_prod/eval_dataset/judged/judged_$P12_FILENAME_TEMP.json" \
+   "$HOME/llm_bridge_prod/eval_dataset/judged/$P12_FILENAME_TEMP/$timestamp/judged_$P12_FILENAME_TEMP.json"
 
 #--- 後片付け -------------------------------------------------------
 kill $pid_vllm

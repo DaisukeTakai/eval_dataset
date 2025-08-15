@@ -61,7 +61,7 @@ vllm serve /home/Competition2025/P12/shareP12/models/Qwen3-32B \
   --tensor-parallel-size $GPU_NUM \
   --reasoning-parser deepseek_r1 \
   --kv-cache-dtype fp8 \
-  --max-model-len 32768 \
+  --max-model-len 20000 \
   --gpu-memory-utilization 0.9 \
   --port $PORT \
   > vllm_predict.log 2>&1 &
@@ -98,7 +98,7 @@ vllm serve /home/Competition2025/P12/shareP12/models/Qwen3-235B-A22B-FP8 \
   --tensor-parallel-size $GPU_NUM \
   --reasoning-parser deepseek_r1 \
   --kv-cache-dtype fp8 \
-  --max-model-len 32768 \
+  --max-model-len 20000 \
   --gpu-memory-utilization 0.9 \
   --enable-expert-parallel \
   --port ${PORT2} \
@@ -134,7 +134,7 @@ mkdir -p "$HOME/llm_bridge_prod/eval_dataset/judged/$P12_FILENAME_TEMP/$timestam
 cp "$HOME/llm_bridge_prod/eval_dataset/predictions/$P12_FILENAME_TEMP.json" \
    "$HOME/llm_bridge_prod/eval_dataset/predictions/$P12_FILENAME_TEMP/$timestamp/$P12_FILENAME_TEMP.json"
 
-cp "$HOME/llm_bridge_prod/eval_dataset/judged/$P12_FILENAME_TEMP.json" \
+cp "$HOME/llm_bridge_prod/eval_dataset/judged/judged_$P12_FILENAME_TEMP.json" \
    "$HOME/llm_bridge_prod/eval_dataset/judged/$P12_FILENAME_TEMP/$timestamp/judged_$P12_FILENAME_TEMP.json"
 
 #--- 次のsbatchのためにscancel_hatakeyama --------------------------
